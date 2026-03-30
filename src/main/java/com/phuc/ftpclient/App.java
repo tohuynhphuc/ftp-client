@@ -4,33 +4,35 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import com.phuc.ftpclient.exception.ServerException;
+import com.phuc.ftpclient.util.Console;
 
 public class App {
 
+    private static Client client;
+    private static Scanner scanner;
+
     public static void main(String[] args) {
-        Client client = new Client();
+        client = new Client();
+        Console.announce("Program started.");
 
-        System.out.println(Constants.CYAN + "Program Started." + Constants.RESET);
-        try {
-            client.connect();
-        } catch (IOException e) {
-            System.err.println(Constants.RED + "[Client Error] " + e.getMessage() + Constants.RESET);
+        if (!connect()) {
+            return;
+        }
+        Console.announce("Client connected.");
+
+        if (!welcomeMessage()) {
             return;
         }
 
-        System.out.println(Constants.CYAN + "Client connected." + Constants.RESET);
+        scanner = new Scanner(System.in);
+        mainLoop();
+        close();
 
-        try {
-            System.out.println("[Server] " + client.receiveMessage());
-        } catch (IOException e) {
-            System.err.println(Constants.RED + "[Client Error] " + e.getMessage() + Constants.RESET);
-            return;
-        } catch (ServerException e) {
-            System.err.println(Constants.PURPLE + "[Server Error] " + e.getMessage() + Constants.RESET);
-        }
+        scanner.close();
+        Console.announce("Program ended.");
+    }
 
-        Scanner scanner = new Scanner(System.in);
-
+    private static void mainLoop() {
         while (true) {
             String command = scanner.nextLine();
             if (command.equalsIgnoreCase("end")) {
@@ -38,23 +40,46 @@ public class App {
             }
             try {
                 client.sendMessage(command);
-                System.out.println("[Server] " + client.receiveMessage());
+                Console.message("[Server] " + client.receiveMessage());
             } catch (IOException e) {
-                System.err.println(Constants.RED + "[Client Error] " + e.getMessage() + Constants.RESET);
+                Console.error("[Client Error] " + e.getMessage());
                 break;
             } catch (ServerException e) {
-                System.err.println(Constants.PURPLE + "[Server Error] " + e.getMessage() + Constants.RESET);
+                Console.warning("[Server Error] " + e.getMessage());
             }
         }
+    }
 
+    private static boolean connect() {
+        try {
+            client.connect();
+        } catch (IOException e) {
+            Console.error("[Client Error] " + e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean welcomeMessage() {
+        try {
+            Console.message("[Server] " + client.receiveMessage());
+        } catch (IOException e) {
+            Console.error("[Client Error] " + e.getMessage());
+            return false;
+        } catch (ServerException e) {
+            Console.warning("[Server Error] " + e.getMessage());
+        }
+        return true;
+    }
+
+    private static boolean close() {
         try {
             client.closeConnection();
         } catch (IOException e) {
-            System.err.println(Constants.RED + "[Client Error] " + e.getMessage() + Constants.RESET);
-            return;
+            Console.error("[Client Error] " + e.getMessage());
+            return false;
         }
-
-        System.out.println(Constants.CYAN + "Program ended." + Constants.RESET);
+        return true;
     }
 
 }

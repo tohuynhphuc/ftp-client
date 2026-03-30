@@ -15,6 +15,9 @@ public class Client {
     private BufferedReader reader;
     private BufferedWriter writer;
 
+    private static final char MESSAGE_DELIMITER = '-';
+    private static final char END_OF_MESSAGE_DELIMITER = ' ';
+
     /**
      * Try to connect to the FTP server at the default port.
      *
@@ -27,6 +30,14 @@ public class Client {
         writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
     }
 
+    /**
+     * Receive a message from the server. Currently will wait until the server
+     * sends the message and will block other functions (not ideal).
+     *
+     * @return
+     * @throws IOException
+     * @throws ServerException
+     */
     public String receiveMessage() throws IOException, ServerException {
         String receivedMessage = reader.readLine();
 
@@ -36,14 +47,14 @@ public class Client {
             throw new ServerException(receivedMessage);
         }
 
-        boolean isMultiLine = receivedMessage.charAt(3) == '-';
+        boolean isMultiLine = receivedMessage.charAt(3) == MESSAGE_DELIMITER;
         boolean isEndOfMessage = false;
 
         while (isMultiLine && !isEndOfMessage) {
             String nextLine = reader.readLine();
             receivedMessage += "\n" + nextLine;
             isEndOfMessage = nextLine.substring(0, 4)
-                    .equalsIgnoreCase(String.valueOf(messageCode) + " ");
+                    .equalsIgnoreCase(String.valueOf(messageCode) + END_OF_MESSAGE_DELIMITER);
         }
 
         return receivedMessage;
