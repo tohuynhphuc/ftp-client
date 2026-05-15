@@ -15,9 +15,6 @@ public class Client {
     private BufferedReader reader;
     private BufferedWriter writer;
 
-    private static final char MESSAGE_DELIMITER = '-';
-    private static final char END_OF_MESSAGE_DELIMITER = ' ';
-
     /**
      * Try to connect to the FTP server at the default port.
      *
@@ -34,30 +31,35 @@ public class Client {
      * Receive a message from the server. Currently will wait until the server
      * sends the message and will block other functions (not ideal).
      *
-     * @return
+     * @return receivedMessage
      * @throws IOException
      * @throws ServerException
      */
-    public String receiveMessage() throws IOException, ServerException {
-        String receivedMessage = reader.readLine();
+    public void startReceiveMessageThread() throws IOException, ServerException {
+        Thread receiveMessageThread = new ReceiveMessageThread(reader);
 
-        int messageCode = Integer.parseInt(receivedMessage.substring(0, 3));
+        receiveMessageThread.start();
+        // String receivedMessage = reader.readLine();
 
-        if (messageCode >= 400 || messageCode < 100) {
-            throw new ServerException(receivedMessage);
-        }
+        // int messageCode = Integer.parseInt(receivedMessage.substring(0, 3));
 
-        boolean isMultiLine = receivedMessage.charAt(3) == MESSAGE_DELIMITER;
-        boolean isEndOfMessage = false;
+        // if (messageCode >= 400 || messageCode < 100) {
+        // throw new ServerException(receivedMessage);
+        // }
 
-        while (isMultiLine && !isEndOfMessage) {
-            String nextLine = reader.readLine();
-            receivedMessage += "\n" + nextLine;
-            isEndOfMessage = nextLine.substring(0, 4)
-                    .equalsIgnoreCase(String.valueOf(messageCode) + END_OF_MESSAGE_DELIMITER);
-        }
+        // boolean isMultiLine = receivedMessage.charAt(3) ==
+        // Constants.MESSAGE_DELIMITER;
+        // boolean isEndOfMessage = false;
 
-        return receivedMessage;
+        // while (isMultiLine && !isEndOfMessage) {
+        // String nextLine = reader.readLine();
+        // receivedMessage += "\n" + nextLine;
+        // isEndOfMessage = nextLine.substring(0, 4)
+        // .equalsIgnoreCase(String.valueOf(messageCode) +
+        // Constants.END_OF_MESSAGE_DELIMITER);
+        // }
+
+        // return receivedMessage;
     }
 
     public void sendMessage(String message) throws IOException {

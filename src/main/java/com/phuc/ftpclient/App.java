@@ -20,8 +20,13 @@ public class App {
         }
         Console.announce("Client connected.");
 
-        if (!welcomeMessage()) {
-            return;
+        try {
+            client.startReceiveMessageThread();
+            System.out.println("YAY");
+        } catch (IOException ex) {
+            System.getLogger(App.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        } catch (ServerException ex) {
+            System.getLogger(App.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
 
         scanner = new Scanner(System.in);
@@ -38,15 +43,7 @@ public class App {
             if (command.equalsIgnoreCase("end")) {
                 break;
             }
-            try {
-                client.sendMessage(command);
-                Console.message("[Server] " + client.receiveMessage());
-            } catch (IOException e) {
-                Console.error("[Client Error] " + e.getMessage());
-                break;
-            } catch (ServerException e) {
-                Console.warning("[Server Error] " + e.getMessage());
-            }
+            System.out.println(command);
         }
     }
 
@@ -56,18 +53,6 @@ public class App {
         } catch (IOException e) {
             Console.error("[Client Error] " + e.getMessage());
             return false;
-        }
-        return true;
-    }
-
-    private static boolean welcomeMessage() {
-        try {
-            Console.message("[Server] " + client.receiveMessage());
-        } catch (IOException e) {
-            Console.error("[Client Error] " + e.getMessage());
-            return false;
-        } catch (ServerException e) {
-            Console.warning("[Server Error] " + e.getMessage());
         }
         return true;
     }
