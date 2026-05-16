@@ -31,18 +31,12 @@ public class App {
             };
 
             receiveThread = client.startReceiveMessageThread(h);
-            // receiveThread.setDaemon(false);
-            Console.announce("Receive Thread Started");
 
             scanner = new Scanner(System.in);
             startMainLoopThread(h);
-            // mainThread.setDaemon(false);
-            Console.announce("Main Thread Started");
 
-            Console.announce("BEFORE THREADS ARE JOINED?");
             receiveThread.join();
             mainThread.join();
-            Console.announce("I GOT HERE THREADS ARE JOINED?");
         } catch (ClientIOException e) {
             // INFO: These errors being catched will stop the program!
             Console.error("Client IO Exception called");
