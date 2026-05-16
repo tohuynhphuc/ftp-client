@@ -18,4 +18,8 @@ public class Console {
         System.err.println(message);
     }
 
+    public static void debug(String message) {
+        System.err.println(Constants.GREEN + message + Constants.RESET);
+    }
+
 }

@@ -18,8 +18,11 @@ public class PrintWorkingDirCmd extends BaseCmd {
 
     @Override
     public String buildCommand(ArrayList<String> args) throws InvalidArgumentsException {
-        if (!args.isEmpty()) {
-            throw new InvalidArgumentsException("Error: Expecting 0 arguments for command " + getName() + ".");
+        int argsCount = 0;
+
+        if (args.size() != argsCount) {
+            throw new InvalidArgumentsException(
+                    "Error: Expecting " + argsCount + " arguments for command " + getName() + ".");
         }
 
         StringBuilder command = new StringBuilder();

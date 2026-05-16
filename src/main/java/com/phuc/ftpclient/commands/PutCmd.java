@@ -5,17 +5,17 @@ import java.util.ArrayList;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.threads.Purpose;
 
-public class GetCmd extends BaseCmd {
+public class PutCmd extends BaseCmd {
 
     @Override
     public String getName() {
-        return "get";
+        return "put";
     }
 
     @Override
     public String getUsage() {
-        String usage = "Downloads file from server to the specified location with the specified name.\n\tUsage: "
-                + getName() + " <path_to_file> <local_file_name>";
+        String usage = "Uploads file to server to the specified location with the specified name. Will not create a new folder if path does not exist.\n\tUsage: "
+                + getName() + " <path_to_local_file> <path_to_server_file>";
         return usage;
     }
 
@@ -31,9 +31,9 @@ public class GetCmd extends BaseCmd {
         StringBuilder command = new StringBuilder();
         command.append("PASV").append("\n");
         // TODO: Currently hard coding
-        command.append("RETR ").append("test.txt").append("\n");
+        command.append("STOR ").append(args.get(1)).append("\n");
 
-        CommandHandler.getInstance().setPurpose(Purpose.DOWNLOAD);
+        CommandHandler.getInstance().setPurpose(Purpose.UPLOAD);
 
         return command.toString();
     }

@@ -24,6 +24,7 @@ public class CommandHandler {
         registerCommand(new HelpCmd(this));
         registerCommand(new ListCmd());
         registerCommand(new GetCmd());
+        registerCommand(new PutCmd());
     }
 
     public static CommandHandler getInstance() {

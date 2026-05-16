@@ -45,19 +45,20 @@ public class PassiveSocketThread extends Thread {
                     case Purpose.DOWNLOAD -> {
                         Console.announce("File Download starting...");
                         InputStream dataInputStream = dataSocket.getInputStream();
-                        FileOutputStream fileOutputStream = new FileOutputStream(Constants.LOCAL_DIR + "/test");
+                        FileOutputStream fileOutputStream = new FileOutputStream(Constants.LOCAL_DIR + "/test_123/");
                         dataInputStream.transferTo(fileOutputStream);
                         Console.announce("File Download complete.");
                     }
                     case Purpose.UPLOAD -> {
                         Console.announce("File Upload starting...");
                         OutputStream dataOutputStream = dataSocket.getOutputStream();
-                        FileInputStream fileInputStream = new FileInputStream(
-                                Constants.LOCAL_DIR + "/upload/to-be-upload.txt");
-                        fileInputStream.transferTo(dataOutputStream);
-                        fileInputStream.close();
+                        try (FileInputStream fileInputStream = new FileInputStream(
+                                Constants.LOCAL_DIR + "/upload/to-be-upload.txt")) {
+                            fileInputStream.transferTo(dataOutputStream);
+                        }
                         Console.announce("File Upload complete.");
                     }
+
                     default -> throw new AssertionError();
                 }
             }
