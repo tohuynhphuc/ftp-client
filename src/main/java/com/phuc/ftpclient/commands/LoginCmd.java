@@ -3,11 +3,12 @@ package com.phuc.ftpclient.commands;
 import java.util.ArrayList;
 
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
+import com.phuc.ftpclient.threads.Purpose;
 
 public class LoginCmd extends BaseCmd {
 
     public LoginCmd() {
-
+        purpose = Purpose.MESSAGE;
     }
 
     @Override

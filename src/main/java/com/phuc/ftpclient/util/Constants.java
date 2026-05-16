@@ -1,4 +1,4 @@
-package com.phuc.ftpclient;
+package com.phuc.ftpclient.util;
 
 public class Constants {
 
@@ -7,6 +7,8 @@ public class Constants {
 
     public static final char MESSAGE_DELIMITER = '-';
     public static final char END_OF_MESSAGE_DELIMITER = ' ';
+
+    public static final String LOCAL_DIR = "local-dir/";
 
     // ANSI Color Codes
     public static final String RESET = "\u001B[0m";

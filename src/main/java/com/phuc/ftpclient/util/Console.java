@@ -1,7 +1,5 @@
 package com.phuc.ftpclient.util;
 
-import com.phuc.ftpclient.Constants;
-
 public class Console {
 
     public static void announce(String message) {

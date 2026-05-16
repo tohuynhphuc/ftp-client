@@ -1,11 +1,13 @@
-package com.phuc.ftpclient;
+package com.phuc.ftpclient.threads;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import com.phuc.ftpclient.commands.CommandHandler;
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.ServerException;
 import com.phuc.ftpclient.util.Console;
+import com.phuc.ftpclient.util.Constants;
 
 public class ReceiveMessageThread extends Thread {
 
@@ -27,7 +29,6 @@ public class ReceiveMessageThread extends Thread {
                     break;
                 }
 
-                Console.announce("[SERVER] ");
                 int messageCode = Integer.parseInt(receivedMessage.substring(0, 3));
 
                 if (messageCode >= 400 || messageCode < 100) {
@@ -44,9 +45,17 @@ public class ReceiveMessageThread extends Thread {
                             .equalsIgnoreCase(String.valueOf(messageCode) + Constants.END_OF_MESSAGE_DELIMITER);
                 }
 
-                Console.message(receivedMessage);
+                Console.message("[SERVER] " + receivedMessage);
+
+                String finalMessage = receivedMessage;
+
+                // Passive Mode
+                if (messageCode == 227) {
+                    Thread passiveSocketThread = new PassiveSocketThread(finalMessage,
+                            CommandHandler.getInstance().getPurpose());
+                    passiveSocketThread.start();
+                }
             } catch (IOException ex) {
-                // Thread is being shut down
                 if (Thread.currentThread().isInterrupted()) {
                     Console.announce("Receive thread shutting down.");
                     break;

@@ -1,7 +1,8 @@
-package com.phuc.ftpclient;
+package com.phuc.ftpclient.threads;
 
 import java.util.Scanner;
 
+import com.phuc.ftpclient.Client;
 import com.phuc.ftpclient.commands.CommandHandler;
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;

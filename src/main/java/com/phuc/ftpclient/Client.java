@@ -9,6 +9,8 @@ import java.net.Socket;
 
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.ServerException;
+import com.phuc.ftpclient.threads.ReceiveMessageThread;
+import com.phuc.ftpclient.util.Constants;
 
 public class Client {
 
@@ -53,7 +55,6 @@ public class Client {
         try {
             writer.write(message + "\r\n");
             writer.flush();
-            // System.out.println("[Client] Message sent: " + message);
         } catch (IOException e) {
             throw new ClientIOException(e.getMessage());
         }

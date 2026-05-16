@@ -5,15 +5,21 @@ import java.util.ArrayList;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.threads.Purpose;
 
-public class PrintWorkingDirCmd extends BaseCmd {
+public class ListCmd extends BaseCmd {
 
-    public PrintWorkingDirCmd() {
+    public ListCmd() {
         purpose = Purpose.MESSAGE;
     }
 
     @Override
     public String getName() {
-        return "pwd";
+        return "ls";
+    }
+
+    @Override
+    public String getUsage() {
+        String usage = "Lists files in working directory.\n\tUsage: " + getName();
+        return usage;
     }
 
     @Override
@@ -23,14 +29,12 @@ public class PrintWorkingDirCmd extends BaseCmd {
         }
 
         StringBuilder command = new StringBuilder();
-        command.append("PWD").append("\n");
-        return command.toString();
-    }
+        command.append("PASV").append("\n");
+        command.append("LIST").append("\n");
 
-    @Override
-    public String getUsage() {
-        String usage = "Prints working directory.\n\tUsage: " + getName();
-        return usage;
+        CommandHandler.getInstance().setPurpose(Purpose.MESSAGE);
+
+        return command.toString();
     }
 
 }

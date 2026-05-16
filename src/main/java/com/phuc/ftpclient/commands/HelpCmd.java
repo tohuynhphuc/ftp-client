@@ -3,6 +3,7 @@ package com.phuc.ftpclient.commands;
 import java.util.ArrayList;
 
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
+import com.phuc.ftpclient.threads.Purpose;
 import com.phuc.ftpclient.util.Console;
 
 public class HelpCmd extends BaseCmd {
@@ -11,6 +12,7 @@ public class HelpCmd extends BaseCmd {
 
     public HelpCmd(CommandHandler handler) {
         this.handler = handler;
+        purpose = Purpose.MESSAGE;
     }
 
     @Override

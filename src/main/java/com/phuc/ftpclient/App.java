@@ -4,13 +4,14 @@ import java.util.Scanner;
 
 import com.phuc.ftpclient.commands.CommandHandler;
 import com.phuc.ftpclient.exception.ClientIOException;
+import com.phuc.ftpclient.threads.MainLoopThread;
 import com.phuc.ftpclient.util.Console;
 
 public class App {
 
     private static Client client;
     private static Scanner scanner;
-    private static final CommandHandler commandHandler = new CommandHandler();
+    private static final CommandHandler commandHandler = CommandHandler.getInstance();
 
     private static volatile boolean isRunning = false;
     private static Thread receiveThread;
