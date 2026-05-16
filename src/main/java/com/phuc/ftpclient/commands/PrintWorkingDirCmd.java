@@ -18,14 +18,7 @@ public class PrintWorkingDirCmd extends BaseCmd {
         }
 
         StringBuilder command = new StringBuilder();
-        // try {
         command.append("PWD").append("\n");
-        // Console.message("[Server] " + client.receiveMessage());
-        // } catch (IOException e) {
-        // Console.error("[Client Error] " + e.getMessage());
-        // } catch (ServerException e) {
-        // Console.error("[Client Error] " + e.getMessage());
-        // }
         return command.toString();
     }
 
