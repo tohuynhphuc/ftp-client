@@ -22,4 +22,10 @@ public class PrintWorkingDirCmd extends BaseCmd {
         return command.toString();
     }
 
+    @Override
+    public String getUsage() {
+        String usage = "Prints working directory.\n\tUsage: " + getName();
+        return usage;
+    }
+
 }

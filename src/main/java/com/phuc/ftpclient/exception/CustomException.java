@@ -11,12 +11,8 @@ public abstract class CustomException extends Exception {
     }
 
     public void announceError() {
-        // StackTraceElement location = getStackTrace()[0];
         Console.error("[" + getType() + "] " + getMessage());
         printStackTrace();
-        // Console.error(" -> at " + location.getClassName() + "." +
-        // location.getMethodName() + "()" + " line "
-        // + location.getLineNumber());
     }
 
 }

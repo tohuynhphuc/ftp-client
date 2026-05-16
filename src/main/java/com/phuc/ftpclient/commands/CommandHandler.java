@@ -16,6 +16,7 @@ public class CommandHandler {
     public CommandHandler() {
         registerCommand(new LoginCmd());
         registerCommand(new PrintWorkingDirCmd());
+        registerCommand(new HelpCmd(this));
     }
 
     public void executeCommand(Client client, String userCommand) throws ClientIOException, InvalidArgumentsException {
@@ -35,6 +36,10 @@ public class CommandHandler {
 
         String commandSequence = command.buildCommand(args);
         return commandSequence;
+    }
+
+    public ICommand[] getCommandArray() {
+        return map.values().toArray(new ICommand[0]);
     }
 
     public ICommand getCommand(String name) {

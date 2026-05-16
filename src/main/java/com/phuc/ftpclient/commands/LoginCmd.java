@@ -27,4 +27,10 @@ public class LoginCmd extends BaseCmd {
         return command.toString();
     }
 
+    @Override
+    public String getUsage() {
+        String usage = "Logs in to the system with username and password.\n\tUsage: " + getName() + " <username> <password>";
+        return usage;
+    }
+
 }

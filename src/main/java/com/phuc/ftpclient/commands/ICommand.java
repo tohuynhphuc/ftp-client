@@ -8,6 +8,8 @@ public interface ICommand {
 
     public String getName();
 
+    public String getUsage();
+
     public String buildCommand(ArrayList<String> args) throws InvalidArgumentsException;
 
 }
