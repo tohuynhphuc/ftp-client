@@ -38,7 +38,6 @@ public class App {
             receiveThread.join();
             mainThread.join();
         } catch (ClientIOException e) {
-            // INFO: These errors being catched will stop the program!
             Console.error("Client IO Exception called");
             e.announceError();
 
@@ -46,7 +45,6 @@ public class App {
         } catch (InterruptedException ex) {
             // TODO: Custom Exception
             Console.error("Interrupted Exception called");
-            ex.printStackTrace();
             shutdown();
         } finally {
             cleanup();
@@ -71,7 +69,6 @@ public class App {
         isRunning = false;
         Console.announce("Initiating graceful shutdown...");
 
-        // Interrupt threads
         if (receiveThread != null && receiveThread.isAlive()) {
             receiveThread.interrupt();
         }
@@ -80,22 +77,21 @@ public class App {
             mainThread.interrupt();
         }
 
-        // Wait for threads to finish
         try {
             if (receiveThread != null && receiveThread.isAlive()) {
-                receiveThread.join(5000); // Wait up to 5 seconds
+                receiveThread.join(5000);
             }
             if (mainThread != null && mainThread.isAlive()) {
-                mainThread.join(5000); // Wait up to 5 seconds
+                mainThread.join(5000);
             }
         } catch (InterruptedException ex) {
-            System.getLogger(App.class.getName()).log(System.Logger.Level.WARNING, "Shutdown interrupted", ex);
+            // TODO: Custom Exception
+            Console.error("Interrupted Exception called");
         }
     }
 
     private static void cleanup() {
         try {
-            Console.warning("CLEANUP IS BEING CALLED");
             close();
         } catch (ClientIOException e) {
             e.announceError();

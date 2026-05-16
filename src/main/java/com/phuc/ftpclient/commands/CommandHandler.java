@@ -39,7 +39,7 @@ public class CommandHandler {
     }
 
     public ICommand[] getCommandArray() {
-        return map.values().toArray(new ICommand[0]);
+        return map.values().toArray(ICommand[]::new);
     }
 
     public ICommand getCommand(String name) {
