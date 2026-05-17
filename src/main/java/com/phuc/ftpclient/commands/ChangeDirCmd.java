@@ -5,23 +5,23 @@ import java.util.ArrayList;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.threads.Purpose;
 
-public class GetCmd extends BaseCmd {
+public class ChangeDirCmd extends BaseCmd {
 
     @Override
     public String getName() {
-        return "get";
+        return "cd";
     }
 
     @Override
     public String getUsage() {
-        String usage = "Downloads file from server to the specified location with the specified name.\n\tUsage: "
-                + getName() + " <path_to_server_file> <local_file_name>";
+        String usage = "Changes directory.\n\tUsage: "
+                + getName() + " <directory>";
         return usage;
     }
 
     @Override
     public String buildCommand(ArrayList<String> args) throws InvalidArgumentsException {
-        int argsCount = 2;
+        int argsCount = 1;
 
         if (args.size() != argsCount) {
             throw new InvalidArgumentsException(
@@ -29,10 +29,9 @@ public class GetCmd extends BaseCmd {
         }
 
         StringBuilder command = new StringBuilder();
-        command.append("PASV").append("\n");
-        command.append("RETR ").append(args.get(0)).append("\n");
+        command.append("CWD ").append(args.get(0)).append("\n");
 
-        CommandHandler.getInstance().setPurpose(Purpose.DOWNLOAD);
+        CommandHandler.getInstance().setPurpose(Purpose.MESSAGE);
 
         return command.toString();
     }

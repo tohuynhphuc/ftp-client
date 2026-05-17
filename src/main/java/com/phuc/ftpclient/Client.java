@@ -43,12 +43,13 @@ public class Client {
      * @throws ServerException
      */
     public Thread startReceiveMessageThread(Thread.UncaughtExceptionHandler h) {
-        ReceiveMessageThread receiveMessageThread = new ReceiveMessageThread(reader);
-        receiveMessageThread.setUncaughtExceptionHandler(h);
+        ReceiveMessageThread thread = new ReceiveMessageThread(reader);
+        thread.setName("Receive Message");
+        thread.setUncaughtExceptionHandler(h);
 
-        receiveMessageThread.start();
+        thread.start();
 
-        return receiveMessageThread;
+        return thread;
     }
 
     public void sendMessage(String message) throws ClientIOException {

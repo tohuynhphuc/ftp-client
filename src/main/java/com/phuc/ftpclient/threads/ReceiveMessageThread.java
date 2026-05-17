@@ -8,6 +8,7 @@ import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.ServerException;
 import com.phuc.ftpclient.util.Console;
 import com.phuc.ftpclient.util.Constants;
+import com.phuc.ftpclient.util.ServerResponse;
 
 public class ReceiveMessageThread extends Thread {
 
@@ -20,6 +21,7 @@ public class ReceiveMessageThread extends Thread {
     @Override
     public void run() {
         String receivedMessage;
+
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 receivedMessage = reader.readLine();
@@ -29,11 +31,7 @@ public class ReceiveMessageThread extends Thread {
                     break;
                 }
 
-                int messageCode = Integer.parseInt(receivedMessage.substring(0, 3));
-
-                if (messageCode >= 400 || messageCode < 100) {
-                    throw new ServerException(receivedMessage);
-                }
+                // int messageCode = Integer.parseInt(receivedMessage.substring(0, 3));
 
                 boolean isMultiLine = receivedMessage.charAt(3) == Constants.MESSAGE_DELIMITER;
                 boolean isEndOfMessage = false;
@@ -41,17 +39,20 @@ public class ReceiveMessageThread extends Thread {
                 while (isMultiLine && !isEndOfMessage) {
                     String nextLine = reader.readLine();
                     receivedMessage += "\n" + nextLine;
-                    isEndOfMessage = nextLine.substring(0, 4)
-                            .equalsIgnoreCase(String.valueOf(messageCode) + Constants.END_OF_MESSAGE_DELIMITER);
+                    isEndOfMessage = nextLine.charAt(3) == Constants.END_OF_MESSAGE_DELIMITER;
                 }
 
-                Console.message("[SERVER] " + receivedMessage);
+                ServerResponse response = new ServerResponse(receivedMessage);
 
-                String finalMessage = receivedMessage;
+                Console.message("[SERVER] " + response);
+
+                if (response.getMessageCode() >= 400 || response.getMessageCode() < 100) {
+                    throw new ServerException(receivedMessage);
+                }
 
                 // Passive Mode
-                if (messageCode == 227) {
-                    Thread passiveSocketThread = new PassiveSocketThread(finalMessage,
+                if (response.getMessageCode() == 227) {
+                    Thread passiveSocketThread = new PassiveSocketThread(response,
                             CommandHandler.getInstance().getPurpose());
                     passiveSocketThread.start();
                 }

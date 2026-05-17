@@ -17,6 +17,12 @@ public class PrintWorkingDirCmd extends BaseCmd {
     }
 
     @Override
+    public String getUsage() {
+        String usage = "Prints working directory.\n\tUsage: " + getName();
+        return usage;
+    }
+
+    @Override
     public String buildCommand(ArrayList<String> args) throws InvalidArgumentsException {
         int argsCount = 0;
 
@@ -29,11 +35,4 @@ public class PrintWorkingDirCmd extends BaseCmd {
         command.append("PWD").append("\n");
         return command.toString();
     }
-
-    @Override
-    public String getUsage() {
-        String usage = "Prints working directory.\n\tUsage: " + getName();
-        return usage;
-    }
-
 }

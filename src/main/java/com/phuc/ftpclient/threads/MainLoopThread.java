@@ -14,9 +14,9 @@ public class MainLoopThread extends Thread {
     private final CommandHandler commandHandler;
     private final Client client;
 
-    public MainLoopThread(Scanner scanner, CommandHandler commandHandler, Client client) {
+    public MainLoopThread(Scanner scanner, Client client) {
         this.scanner = scanner;
-        this.commandHandler = commandHandler;
+        this.commandHandler = CommandHandler.getInstance();
         this.client = client;
     }
 
@@ -24,6 +24,7 @@ public class MainLoopThread extends Thread {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             try {
+                // INFO: Get command from user, sends to Command Handler to execute.
                 String command = scanner.nextLine();
                 if (command.equalsIgnoreCase("end")) {
                     client.closeConnection();

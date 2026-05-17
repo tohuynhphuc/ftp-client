@@ -19,12 +19,17 @@ public class CommandHandler {
     private Purpose purpose = Purpose.MESSAGE;
 
     private CommandHandler() {
+        registerCommand(new HelpCmd(this));
         registerCommand(new LoginCmd());
         registerCommand(new PrintWorkingDirCmd());
-        registerCommand(new HelpCmd(this));
+        registerCommand(new ChangeDirCmd());
         registerCommand(new ListCmd());
         registerCommand(new GetCmd());
         registerCommand(new PutCmd());
+        registerCommand(new DeleteCmd());
+        registerCommand(new MakeDirCmd());
+        registerCommand(new RemoveDirCmd());
+        registerCommand(new QuitCmd());
     }
 
     public static CommandHandler getInstance() {

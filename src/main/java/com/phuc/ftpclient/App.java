@@ -2,7 +2,6 @@ package com.phuc.ftpclient;
 
 import java.util.Scanner;
 
-import com.phuc.ftpclient.commands.CommandHandler;
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.threads.MainLoopThread;
 import com.phuc.ftpclient.util.Console;
@@ -11,11 +10,10 @@ public class App {
 
     private static Client client;
     private static Scanner scanner;
-    private static final CommandHandler commandHandler = CommandHandler.getInstance();
 
     private static volatile boolean isRunning = false;
     private static Thread receiveThread;
-    private static Thread mainThread;
+    private static Thread thread;
 
     public static void main(String[] args) {
         try {
@@ -26,8 +24,8 @@ public class App {
             connect();
             Console.announce("Client connected.");
 
-            Thread.UncaughtExceptionHandler h = (thread, exception) -> {
-                Console.announce("Exception in thread: " + thread.getName());
+            Thread.UncaughtExceptionHandler h = (th, exception) -> {
+                Console.announce("Exception in thread: " + th.getName());
                 shutdown();
             };
 
@@ -37,7 +35,7 @@ public class App {
             startMainLoopThread(h);
 
             receiveThread.join();
-            mainThread.join();
+            thread.join();
         } catch (ClientIOException e) {
             Console.error("Client IO Exception called");
             e.announceError();
@@ -53,9 +51,11 @@ public class App {
     }
 
     private static void startMainLoopThread(Thread.UncaughtExceptionHandler h) throws ClientIOException {
-        mainThread = new MainLoopThread(scanner, commandHandler, client);
+        thread = new MainLoopThread(scanner, client);
+        thread.setName("Main Loop");
+        thread.setUncaughtExceptionHandler(h);
 
-        mainThread.start();
+        thread.start();
     }
 
     private static void connect() throws ClientIOException {
@@ -74,16 +74,16 @@ public class App {
             receiveThread.interrupt();
         }
 
-        if (mainThread != null && mainThread.isAlive()) {
-            mainThread.interrupt();
+        if (thread != null && thread.isAlive()) {
+            thread.interrupt();
         }
 
         try {
             if (receiveThread != null && receiveThread.isAlive()) {
                 receiveThread.join(5000);
             }
-            if (mainThread != null && mainThread.isAlive()) {
-                mainThread.join(5000);
+            if (thread != null && thread.isAlive()) {
+                thread.join(5000);
             }
         } catch (InterruptedException ex) {
             // TODO: Custom Exception
