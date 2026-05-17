@@ -53,7 +53,7 @@ public class ReceiveMessageThread extends Thread {
                 // Passive Mode
                 if (response.getMessageCode() == 227) {
                     Thread passiveSocketThread = new PassiveSocketThread(response,
-                            CommandHandler.getInstance().getPurpose());
+                            CommandHandler.getInstance().getPurpose(), CommandHandler.getInstance().getPathToFile());
                     passiveSocketThread.start();
                 }
             } catch (IOException ex) {

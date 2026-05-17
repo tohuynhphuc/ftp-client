@@ -34,8 +34,8 @@ public class MainLoopThread extends Thread {
                 commandHandler.executeCommand(client, command);
             } catch (InvalidArgumentsException e) {
                 e.announceError();
-            } catch (ClientIOException ex) {
-                System.getLogger(MainLoopThread.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            } catch (ClientIOException e) {
+                e.announceError();
                 break;
             }
         }

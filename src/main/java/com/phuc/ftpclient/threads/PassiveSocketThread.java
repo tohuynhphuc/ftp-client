@@ -18,10 +18,17 @@ public class PassiveSocketThread extends Thread {
 
     private final Purpose purpose;
     private final SocketAddress addr;
+    private String pathToFile;
 
     public PassiveSocketThread(ServerResponse response, Purpose purpose) {
         this.purpose = purpose;
         this.addr = new SocketAddress(response.getMessage());
+    }
+
+    public PassiveSocketThread(ServerResponse response, Purpose purpose, String pathToFile) {
+        this.purpose = purpose;
+        this.addr = new SocketAddress(response.getMessage());
+        this.pathToFile = pathToFile;
     }
 
     @Override
@@ -40,15 +47,14 @@ public class PassiveSocketThread extends Thread {
                 case Purpose.DOWNLOAD -> {
                     Console.debug("File Download starting...");
                     InputStream dataInputStream = dataSocket.getInputStream();
-                    FileOutputStream fileOutputStream = new FileOutputStream(Constants.LOCAL_DIR + "/test_123/");
+                    FileOutputStream fileOutputStream = new FileOutputStream(Constants.LOCAL_DIR + pathToFile);
                     dataInputStream.transferTo(fileOutputStream);
                     Console.debug("File Download complete.");
                 }
                 case Purpose.UPLOAD -> {
                     Console.debug("File Upload starting...");
                     OutputStream dataOutputStream = dataSocket.getOutputStream();
-                    try (FileInputStream fileInputStream = new FileInputStream(
-                            Constants.LOCAL_DIR + "/upload/to-be-upload.txt")) {
+                    try (FileInputStream fileInputStream = new FileInputStream(Constants.LOCAL_DIR + pathToFile)) {
                         fileInputStream.transferTo(dataOutputStream);
                     }
                     Console.debug("File Upload complete.");

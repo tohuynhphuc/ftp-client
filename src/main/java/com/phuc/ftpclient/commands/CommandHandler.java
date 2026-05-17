@@ -17,6 +17,7 @@ public class CommandHandler {
     private final Map<String, ICommand> map = new HashMap<>();
 
     private Purpose purpose = Purpose.MESSAGE;
+    private String pathToFile;
 
     private CommandHandler() {
         registerCommand(new HelpCmd(this));
@@ -42,6 +43,14 @@ public class CommandHandler {
 
     public Purpose getPurpose() {
         return purpose;
+    }
+
+    public String getPathToFile() {
+        return pathToFile;
+    }
+
+    public void setPathToFile(String pathToFile) {
+        this.pathToFile = pathToFile;
     }
 
     public void executeCommand(Client client, String userCommand) throws ClientIOException, InvalidArgumentsException {

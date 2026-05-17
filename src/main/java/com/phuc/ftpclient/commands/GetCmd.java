@@ -33,6 +33,7 @@ public class GetCmd extends BaseCmd {
         command.append("RETR ").append(args.get(0)).append("\n");
 
         CommandHandler.getInstance().setPurpose(Purpose.DOWNLOAD);
+        CommandHandler.getInstance().setPathToFile(args.get(1));
 
         return command.toString();
     }

@@ -34,6 +34,7 @@ public class PutCmd extends BaseCmd {
         command.append("STOR ").append(args.get(1)).append("\n");
 
         CommandHandler.getInstance().setPurpose(Purpose.UPLOAD);
+        CommandHandler.getInstance().setPathToFile(args.get(0));
 
         return command.toString();
     }
