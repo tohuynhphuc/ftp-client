@@ -8,8 +8,6 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 import com.phuc.ftpclient.exception.ClientIOException;
-import com.phuc.ftpclient.exception.ServerException;
-import com.phuc.ftpclient.threads.ReceiveMessageThread;
 import com.phuc.ftpclient.util.Constants;
 
 public class Client {
@@ -34,23 +32,15 @@ public class Client {
         }
     }
 
-    /**
-     * Receive a message from the server. Currently will wait until the server
-     * sends the message and will block other functions (not ideal).
-     *
-     * @return receivedMessage
-     * @throws IOException
-     * @throws ServerException
-     */
-    public Thread startReceiveMessageThread(Thread.UncaughtExceptionHandler h) {
-        ReceiveMessageThread thread = new ReceiveMessageThread(reader);
-        thread.setName("Receive Message");
-        thread.setUncaughtExceptionHandler(h);
+    // public Thread startReceiveMessageThread(Thread.UncaughtExceptionHandler h) {
+    // ReceiveMessageThread thread = new ReceiveMessageThread(reader);
+    // thread.setName("Receive Message");
+    // thread.setUncaughtExceptionHandler(h);
 
-        thread.start();
+    // thread.start();
 
-        return thread;
-    }
+    // return thread;
+    // }
 
     public void sendMessage(String message) throws ClientIOException {
         try {
@@ -72,6 +62,10 @@ public class Client {
         } catch (IOException e) {
             throw new ClientIOException(e.getMessage());
         }
+    }
+
+    public BufferedReader getReader() {
+        return reader;
     }
 
 }

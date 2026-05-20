@@ -5,10 +5,13 @@ public class Constants {
     public static final String HOST_NAME = "127.0.0.1";
     public static final int PORT = 21;
 
+    public static final boolean IS_CONSOLE = true;
+
     public static final char MESSAGE_DELIMITER = '-';
     public static final char END_OF_MESSAGE_DELIMITER = ' ';
 
     public static final String LOCAL_DIR = "local-dir/";
+    public static final String SERVER_DIR = "ftp-dir/";
 
     // ANSI Color Codes
     public static final String RESET = "\u001B[0m";

@@ -3,8 +3,11 @@ package com.phuc.ftpclient;
 import java.util.Scanner;
 
 import com.phuc.ftpclient.exception.ClientIOException;
-import com.phuc.ftpclient.threads.MainLoopThread;
+import com.phuc.ftpclient.threads.ReceiveMessageThread;
+import com.phuc.ftpclient.threads.SendCmdConsoleThread;
+import com.phuc.ftpclient.threads.SendCmdGUIThread;
 import com.phuc.ftpclient.util.Console;
+import com.phuc.ftpclient.util.Constants;
 
 public class App {
 
@@ -13,56 +16,76 @@ public class App {
 
     private static volatile boolean isRunning = false;
     private static Thread receiveThread;
-    private static Thread thread;
+    private static Thread sendThread;
 
     public static void main(String[] args) {
         try {
-            client = new Client();
             Console.announce("Program started.");
-            isRunning = true;
-
             connect();
             Console.announce("Client connected.");
 
-            Thread.UncaughtExceptionHandler h = (th, exception) -> {
-                Console.announce("Exception in thread: " + th.getName());
-                shutdown();
-            };
-
-            receiveThread = client.startReceiveMessageThread(h);
+            // Thread.UncaughtExceptionHandler h = (th, exception) -> {
+            // Console.announce("Exception in thread: " + th.getName());
+            // shutdown();
+            // };
 
             scanner = new Scanner(System.in);
-            startMainLoopThread(h);
+            startThreads();
+            // startMainLoopThread(h);
 
-            receiveThread.join();
-            thread.join();
+            // while (true) {
+            // // send command
+            // try {
+            // sendCommands(scanner.nextLine());
+            // } catch (InvalidArgumentsException e) {
+            // e.announceError();
+            // // retry the loop
+            // continue;
+            // }
+            // }
+
+            // receiveThread.join();
+            // thread.join();
         } catch (ClientIOException e) {
             Console.error("Client IO Exception called");
             e.announceError();
 
-            shutdown();
-        } catch (InterruptedException ex) {
-            // TODO: Custom Exception
-            Console.error("Interrupted Exception called");
             shutdown();
         } finally {
             cleanup();
         }
     }
 
-    private static void startMainLoopThread(Thread.UncaughtExceptionHandler h) throws ClientIOException {
-        thread = new MainLoopThread(scanner, client);
-        thread.setName("Main Loop");
-        thread.setUncaughtExceptionHandler(h);
+    public static void startThreads() {
+        receiveThread = new ReceiveMessageThread(client);
+        receiveThread.setName("receiveThread");
+        receiveThread.start();
 
-        thread.start();
+        if (Constants.IS_CONSOLE) {
+            sendThread = new SendCmdConsoleThread(scanner, client);
+        } else {
+            sendThread = new SendCmdGUIThread(client);
+        }
+        sendThread.setName("sendThread");
+        sendThread.start();
+
+        try {
+            receiveThread.join();
+            sendThread.join();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
-    private static void connect() throws ClientIOException {
+    public static void connect() throws ClientIOException {
+        client = new Client();
+        isRunning = true;
         client.connect();
     }
 
-    private static synchronized void shutdown() {
+    public static synchronized void shutdown() {
+        Console.debug("Shutdown called");
         if (!isRunning) {
             return;
         }
@@ -74,24 +97,27 @@ public class App {
             receiveThread.interrupt();
         }
 
-        if (thread != null && thread.isAlive()) {
-            thread.interrupt();
+        if (sendThread != null && sendThread.isAlive()) {
+            sendThread.interrupt();
         }
 
         try {
             if (receiveThread != null && receiveThread.isAlive()) {
                 receiveThread.join(5000);
             }
-            if (thread != null && thread.isAlive()) {
-                thread.join(5000);
+            if (sendThread != null && sendThread.isAlive()) {
+                sendThread.join(5000);
             }
         } catch (InterruptedException ex) {
             // TODO: Custom Exception
             Console.error("Interrupted Exception called");
+        } finally {
+            cleanup();
         }
     }
 
     private static void cleanup() {
+        Console.debug("Cleanup called");
         try {
             close();
         } catch (ClientIOException e) {
@@ -99,7 +125,9 @@ public class App {
         }
 
         if (scanner != null) {
+            Console.debug("Scanner closing");
             scanner.close();
+            Console.debug("Scanner closed");
         }
 
         Console.announce("Program ended.");

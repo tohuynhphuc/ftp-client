@@ -27,7 +27,7 @@ public class QuitCmd extends BaseCmd {
         }
 
         StringBuilder command = new StringBuilder();
-        command.append("end").append("\n");
+        command.append("QUIT").append("\n");
         return command.toString();
     }
 
