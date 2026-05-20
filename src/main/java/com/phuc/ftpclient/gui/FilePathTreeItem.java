@@ -29,7 +29,7 @@ public class FilePathTreeItem extends TreeItem<String> {
     private static volatile boolean watcherThreadStarted = false;
 
     // private final String fullPath;
-    private final Path path;
+    private Path path;
     private boolean isDirectory;
     private WatchKey watchKey;
 
@@ -184,6 +184,10 @@ public class FilePathTreeItem extends TreeItem<String> {
 
     public boolean getIsDirectory() {
         return isDirectory;
+    }
+
+    public String getFilePath() {
+        return path.toString();
     }
 
     @Override

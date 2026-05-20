@@ -1,7 +1,5 @@
 package com.phuc.ftpclient.threads;
 
-import java.util.Scanner;
-
 import com.phuc.ftpclient.App;
 import com.phuc.ftpclient.Client;
 import com.phuc.ftpclient.commands.CommandHandler;

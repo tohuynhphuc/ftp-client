@@ -5,7 +5,6 @@ import java.util.Scanner;
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.threads.ReceiveMessageThread;
 import com.phuc.ftpclient.threads.SendCmdConsoleThread;
-import com.phuc.ftpclient.threads.SendCmdGUIThread;
 import com.phuc.ftpclient.util.Console;
 import com.phuc.ftpclient.util.Constants;
 
@@ -63,15 +62,15 @@ public class App {
 
         if (Constants.IS_CONSOLE) {
             sendThread = new SendCmdConsoleThread(scanner, client);
-        } else {
-            sendThread = new SendCmdGUIThread(client);
+            sendThread.setName("sendThread");
+            sendThread.start();
         }
-        sendThread.setName("sendThread");
-        sendThread.start();
 
         try {
-            receiveThread.join();
-            sendThread.join();
+            if (Constants.IS_CONSOLE) {
+                receiveThread.join();
+                sendThread.join();
+            }
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -135,6 +134,14 @@ public class App {
 
     private static void close() throws ClientIOException {
         client.closeConnection();
+    }
+
+    public static Client getClient() {
+        return client;
+    }
+
+    public static boolean getIsRunning() {
+        return isRunning;
     }
 
 }

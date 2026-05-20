@@ -13,7 +13,6 @@ public class Constants {
     public static final String LOCAL_DIR = "local-dir/";
     public static final String SERVER_DIR = "ftp-dir/";
 
-    // ANSI Color Codes
     public static final String RESET = "\u001B[0m";
     public static final String RED = "\u001B[31m";
     public static final String GREEN = "\u001B[32m";

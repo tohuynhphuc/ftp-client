@@ -31,6 +31,7 @@ public class CommandHandler {
         registerCommand(new MakeDirCmd());
         registerCommand(new RemoveDirCmd());
         registerCommand(new QuitCmd());
+        registerCommand(new MLSDCmd());
     }
 
     public static CommandHandler getInstance() {

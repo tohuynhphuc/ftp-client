@@ -44,10 +44,23 @@ public class PassiveSocketThread extends Thread {
                         Console.message(line);
                     }
                 }
+                case Purpose.MLSD -> {
+                    BufferedReader dataReader = new BufferedReader(
+                            new InputStreamReader(dataSocket.getInputStream()));
+
+                    String line;
+                    while (!Thread.currentThread().isInterrupted() && (line = dataReader.readLine()) != null) {
+                        if (line.startsWith("type=")) {
+                            
+                        }
+                    }
+                }
                 case Purpose.DOWNLOAD -> {
                     Console.debug("File Download starting...");
                     InputStream dataInputStream = dataSocket.getInputStream();
-                    FileOutputStream fileOutputStream = new FileOutputStream(Constants.LOCAL_DIR + pathToFile);
+                    // FileOutputStream fileOutputStream = new FileOutputStream(Constants.LOCAL_DIR
+                    // + pathToFile);
+                    FileOutputStream fileOutputStream = new FileOutputStream(pathToFile);
                     dataInputStream.transferTo(fileOutputStream);
                     Console.debug("File Download complete.");
                 }
@@ -55,6 +68,7 @@ public class PassiveSocketThread extends Thread {
                     Console.debug("File Upload starting...");
                     OutputStream dataOutputStream = dataSocket.getOutputStream();
                     try (FileInputStream fileInputStream = new FileInputStream(Constants.LOCAL_DIR + pathToFile)) {
+                        // try (FileInputStream fileInputStream = new FileInputStream(pathToFile)) {
                         fileInputStream.transferTo(dataOutputStream);
                     }
                     Console.debug("File Upload complete.");
