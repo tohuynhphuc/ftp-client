@@ -1,13 +1,15 @@
 package com.phuc.ftpclient.commands;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.phuc.ftpclient.Client;
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
+import com.phuc.ftpclient.exception.ServerException;
+import com.phuc.ftpclient.threads.PassiveSocketThread;
 import com.phuc.ftpclient.threads.Purpose;
 
 public class CommandHandler {
@@ -18,6 +20,8 @@ public class CommandHandler {
 
     private Purpose purpose = Purpose.MESSAGE;
     private String pathToFile;
+
+    private PassiveSocketThread pasvSocketThread;
 
     private CommandHandler() {
         registerCommand(new HelpCmd(this));
@@ -54,31 +58,14 @@ public class CommandHandler {
         this.pathToFile = pathToFile;
     }
 
-    public void executeCommand(Client client, String userCommand) throws ClientIOException, InvalidArgumentsException {
-        String commandSequence = processCommand(userCommand);
-
-        String[] commandList = commandSequence.split("\n");
-        for (String command : commandList) {
-            client.sendMessage(command);
-        }
-    }
-
-    private String processCommand(String userCommand) throws InvalidArgumentsException {
-
+    public void executeCommand(String userCommand)
+            throws ClientIOException, InvalidArgumentsException, ServerException, IOException {
         String[] commandList = userCommand.split(" ");
 
-        /*
-         * For testing purposes. If I type an unimplemented command, input the
-         * command directly onto the server.
-         */
-        if (!hasCommand(commandList[0])) {
-            return userCommand;
-        }
         ICommand command = getCommand(commandList[0]);
         ArrayList<String> args = new ArrayList<>(Arrays.asList(Arrays.copyOfRange(commandList, 1, commandList.length)));
 
-        String commandSequence = command.buildCommand(args);
-        return commandSequence;
+        command.execute(args);
     }
 
     public ICommand[] getCommandArray() {
@@ -95,6 +82,14 @@ public class CommandHandler {
 
     private void registerCommand(ICommand command) {
         map.put(command.getName(), command);
+    }
+
+    public PassiveSocketThread getPasvSocketThread() {
+        return pasvSocketThread;
+    }
+
+    public void setPasvSocketThread(PassiveSocketThread pasvSocketThread) {
+        this.pasvSocketThread = pasvSocketThread;
     }
 
 }

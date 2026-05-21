@@ -25,7 +25,7 @@ public class ReceiveMessageThread extends Thread {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 while (client.getReader().ready()) {
-                    receiveMessages(client.getReader());
+                    receiveMessages();
                 }
             } catch (IOException ex) {
                 if (Thread.currentThread().isInterrupted()) {
@@ -45,14 +45,15 @@ public class ReceiveMessageThread extends Thread {
         Console.announce("Receive thread ended.");
     }
 
-    private static void receiveMessages(BufferedReader reader) throws IOException, ServerException {
+    public static ServerResponse receiveMessages() throws IOException, ServerException {
+        BufferedReader reader = App.getClient().getReader();
         String receivedMessage;
         receivedMessage = reader.readLine();
         if (receivedMessage == null) {
             // Connection closed by server
             Console.announce("Connection closed by server.");
             App.shutdown();
-            return;
+            return null;
         }
 
         boolean isMultiLine = receivedMessage.charAt(3) == Constants.MESSAGE_DELIMITER;
@@ -74,10 +75,12 @@ public class ReceiveMessageThread extends Thread {
 
         // Passive Mode
         if (response.getMessageCode() == 227) {
-            Thread passiveSocketThread = new PassiveSocketThread(response,
+            PassiveSocketThread passiveSocketThread = new PassiveSocketThread(response,
                     CommandHandler.getInstance().getPurpose(), CommandHandler.getInstance().getPathToFile());
+            CommandHandler.getInstance().setPasvSocketThread(passiveSocketThread);
             passiveSocketThread.start();
         }
+        return response;
     }
 
 }

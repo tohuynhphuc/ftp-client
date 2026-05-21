@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import com.phuc.ftpclient.util.Console;
-import com.phuc.ftpclient.util.Constants;
 import com.phuc.ftpclient.util.ServerResponse;
 import com.phuc.ftpclient.util.SocketAddress;
 
@@ -19,6 +18,8 @@ public class PassiveSocketThread extends Thread {
     private final Purpose purpose;
     private final SocketAddress addr;
     private String pathToFile;
+    private boolean isMlsdReady = false;
+    private String mlsdResponse;
 
     public PassiveSocketThread(ServerResponse response, Purpose purpose) {
         this.purpose = purpose;
@@ -49,10 +50,16 @@ public class PassiveSocketThread extends Thread {
                             new InputStreamReader(dataSocket.getInputStream()));
 
                     String line;
+                    mlsdResponse = "";
                     while (!Thread.currentThread().isInterrupted() && (line = dataReader.readLine()) != null) {
                         if (line.startsWith("type=")) {
-                            
+                            Console.message("FOUND LINE: " + line);
+                            mlsdResponse += line + "\n";
                         }
+                    }
+                    synchronized (this) {
+                        isMlsdReady = true;
+                        notifyAll();
                     }
                 }
                 case Purpose.DOWNLOAD -> {
@@ -67,8 +74,9 @@ public class PassiveSocketThread extends Thread {
                 case Purpose.UPLOAD -> {
                     Console.debug("File Upload starting...");
                     OutputStream dataOutputStream = dataSocket.getOutputStream();
-                    try (FileInputStream fileInputStream = new FileInputStream(Constants.LOCAL_DIR + pathToFile)) {
-                        // try (FileInputStream fileInputStream = new FileInputStream(pathToFile)) {
+                    // try (FileInputStream fileInputStream = new
+                    // FileInputStream(Constants.LOCAL_DIR + pathToFile)) {
+                    try (FileInputStream fileInputStream = new FileInputStream(pathToFile)) {
                         fileInputStream.transferTo(dataOutputStream);
                     }
                     Console.debug("File Upload complete.");
@@ -82,6 +90,18 @@ public class PassiveSocketThread extends Thread {
         }
 
         Console.announce("Passive socket thread ended.");
+    }
+
+    public boolean getIsMlsdReady() {
+        return isMlsdReady;
+    }
+
+    public synchronized String getMlsdResponse() throws InterruptedException {
+        while (!isMlsdReady) {
+            wait();
+        }
+        isMlsdReady = false;
+        return mlsdResponse;
     }
 
 }

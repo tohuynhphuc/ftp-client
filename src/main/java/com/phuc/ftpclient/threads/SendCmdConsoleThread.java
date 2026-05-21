@@ -8,8 +8,7 @@ public class SendCmdConsoleThread extends SendCommandThread {
 
     private final Scanner scanner;
 
-    public SendCmdConsoleThread(Scanner scanner, Client client) {
-        super(client);
+    public SendCmdConsoleThread(Scanner scanner) {
         this.scanner = scanner;
     }
 

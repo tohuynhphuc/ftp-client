@@ -1,9 +1,15 @@
 package com.phuc.ftpclient.commands;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import com.phuc.ftpclient.App;
+import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
+import com.phuc.ftpclient.exception.ServerException;
 import com.phuc.ftpclient.threads.Purpose;
+import com.phuc.ftpclient.threads.ReceiveMessageThread;
+import com.phuc.ftpclient.util.ServerResponse;
 
 public class GetCmd extends BaseCmd {
 
@@ -20,7 +26,8 @@ public class GetCmd extends BaseCmd {
     }
 
     @Override
-    public String buildCommand(ArrayList<String> args) throws InvalidArgumentsException {
+    public boolean execute(ArrayList<String> args)
+            throws InvalidArgumentsException, ClientIOException, ServerException, IOException {
         int argsCount = 2;
 
         if (args.size() != argsCount) {
@@ -28,14 +35,15 @@ public class GetCmd extends BaseCmd {
                     "Error: Expecting " + argsCount + " arguments for command " + getName() + ".");
         }
 
-        StringBuilder command = new StringBuilder();
-        command.append("PASV").append("\n");
-        command.append("RETR ").append(args.get(0)).append("\n");
-
         CommandHandler.getInstance().setPurpose(Purpose.DOWNLOAD);
         CommandHandler.getInstance().setPathToFile(args.get(1));
+        App.getClient().sendMessage("PASV");
+        ReceiveMessageThread.receiveMessages();
+        App.getClient().sendMessage("RETR " + args.get(0));
+        ReceiveMessageThread.receiveMessages();
+        ServerResponse response = ReceiveMessageThread.receiveMessages();
 
-        return command.toString();
+        return response.getMessageCode() >= 200 && response.getMessageCode() <= 399;
     }
 
 }

@@ -2,7 +2,6 @@ package com.phuc.ftpclient.commands;
 
 import java.util.ArrayList;
 
-import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.threads.Purpose;
 import com.phuc.ftpclient.util.Console;
 
@@ -27,14 +26,13 @@ public class HelpCmd extends BaseCmd {
     }
 
     @Override
-    public String buildCommand(ArrayList<String> args) throws InvalidArgumentsException {
+    public boolean execute(ArrayList<String> args) {
         ICommand[] commandArray = handler.getCommandArray();
 
         for (ICommand command : commandArray) {
             Console.message(command.getName() + "\t" + command.getUsage());
         }
 
-        return "\n";
+        return true;
     }
-
 }

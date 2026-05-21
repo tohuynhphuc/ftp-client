@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 
 import com.phuc.ftpclient.exception.ClientIOException;
-import com.phuc.ftpclient.util.Constants;
+import com.phuc.ftpclient.util.Console;
 
 public class Client {
 
@@ -16,14 +16,9 @@ public class Client {
     private BufferedReader reader;
     private BufferedWriter writer;
 
-    /**
-     * Try to connect to the FTP server at the default port.
-     *
-     * @throws IOException
-     */
-    public void connect() throws ClientIOException {
+    public void connect(String hostName, int port) throws ClientIOException {
         try {
-            socket = new Socket(Constants.HOST_NAME, Constants.PORT);
+            socket = new Socket(hostName, port);
 
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -32,18 +27,9 @@ public class Client {
         }
     }
 
-    // public Thread startReceiveMessageThread(Thread.UncaughtExceptionHandler h) {
-    // ReceiveMessageThread thread = new ReceiveMessageThread(reader);
-    // thread.setName("Receive Message");
-    // thread.setUncaughtExceptionHandler(h);
-
-    // thread.start();
-
-    // return thread;
-    // }
-
     public void sendMessage(String message) throws ClientIOException {
         try {
+            Console.debug(message);
             writer.write(message + "\r\n");
             writer.flush();
         } catch (IOException e) {
@@ -51,11 +37,6 @@ public class Client {
         }
     }
 
-    /**
-     * Close the established connection to the FTP server.
-     *
-     * @throws IOException
-     */
     public void closeConnection() throws ClientIOException {
         try {
             socket.close();

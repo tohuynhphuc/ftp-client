@@ -1,5 +1,6 @@
 package com.phuc.ftpclient.gui;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -17,10 +18,10 @@ public class FTPTreeItem extends TreeItem<String> {
     public static final Image FILE_IMG = new Image("img/file.png");
 
     private final MLSDEntry node;
-    private final Function<MLSDEntry, List<MLSDEntry>> childLoader;
+    private final Function<FTPTreeItem, List<MLSDEntry>> childLoader;
     private boolean isChildrenLoaded = false;
 
-    public FTPTreeItem(MLSDEntry node, Function<MLSDEntry, List<MLSDEntry>> childLoader) {
+    public FTPTreeItem(MLSDEntry node, Function<FTPTreeItem, List<MLSDEntry>> childLoader) {
         super(node.getName());
 
         this.node = node;
@@ -69,7 +70,7 @@ public class FTPTreeItem extends TreeItem<String> {
 
         isChildrenLoaded = true;
 
-        List<MLSDEntry> children = childLoader.apply(node);
+        List<MLSDEntry> children = childLoader.apply(this);
 
         Platform.runLater(() -> {
             getChildren().clear();
@@ -82,6 +83,24 @@ public class FTPTreeItem extends TreeItem<String> {
                 getChildren().add(new FTPTreeItem(child, childLoader));
             }
         });
+    }
+
+    public String getFilePath() {
+        LinkedList<String> parts = new LinkedList<>();
+
+        TreeItem<String> current = this;
+
+        while (current != null) {
+            String value = current.getValue();
+
+            if (value != null && !value.isBlank() && !value.equals("/")) {
+                parts.addFirst(value);
+            }
+
+            current = current.getParent();
+        }
+
+        return "/" + String.join("/", parts);
     }
 
     public boolean getIsDirectory() {

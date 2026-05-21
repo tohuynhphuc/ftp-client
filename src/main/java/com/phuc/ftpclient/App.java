@@ -20,7 +20,7 @@ public class App {
     public static void main(String[] args) {
         try {
             Console.announce("Program started.");
-            connect();
+            connect(Constants.HOST_NAME, Constants.PORT);
             Console.announce("Client connected.");
 
             // Thread.UncaughtExceptionHandler h = (th, exception) -> {
@@ -29,7 +29,7 @@ public class App {
             // };
 
             scanner = new Scanner(System.in);
-            startThreads();
+            // startThreads();
             // startMainLoopThread(h);
 
             // while (true) {
@@ -55,32 +55,32 @@ public class App {
         }
     }
 
-    public static void startThreads() {
-        receiveThread = new ReceiveMessageThread(client);
-        receiveThread.setName("receiveThread");
-        receiveThread.start();
+    // public static void startThreads() {
+    // receiveThread = new ReceiveMessageThread(client);
+    // receiveThread.setName("receiveThread");
+    // receiveThread.start();
 
-        if (Constants.IS_CONSOLE) {
-            sendThread = new SendCmdConsoleThread(scanner, client);
-            sendThread.setName("sendThread");
-            sendThread.start();
-        }
+    // if (Constants.IS_CONSOLE) {
+    // sendThread = new SendCmdConsoleThread(scanner);
+    // sendThread.setName("sendThread");
+    // sendThread.start();
+    // }
 
-        try {
-            if (Constants.IS_CONSOLE) {
-                receiveThread.join();
-                sendThread.join();
-            }
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+    // try {
+    // if (Constants.IS_CONSOLE) {
+    // receiveThread.join();
+    // sendThread.join();
+    // }
+    // } catch (InterruptedException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // }
 
-    public static void connect() throws ClientIOException {
+    public static void connect(String hostName, int port) throws ClientIOException {
         client = new Client();
         isRunning = true;
-        client.connect();
+        client.connect(hostName, port);
     }
 
     public static synchronized void shutdown() {
