@@ -21,10 +21,10 @@ import com.phuc.ftpclient.gui.FilePathTreeItem;
 import com.phuc.ftpclient.state.State;
 import com.phuc.ftpclient.state.StateMachine;
 import com.phuc.ftpclient.threads.PassiveSocketThread;
-import com.phuc.ftpclient.threads.ReceiveMessageThread;
 import com.phuc.ftpclient.util.Console;
 import com.phuc.ftpclient.util.Constants;
 import com.phuc.ftpclient.util.MLSDEntry;
+import com.phuc.ftpclient.util.ReceiveMessage;
 import com.phuc.ftpclient.util.ServerResponse;
 
 import javafx.application.Application;
@@ -88,59 +88,7 @@ public class FTPApplication extends Application {
         });
 
         StateMachine.getInstance().switchState(State.INIT);
-
-        // new Thread(() -> {
-        // try {
-        // while (!App.getIsRunning()) {
-
-        // }
-        // Thread.sleep(500);
-        // List<String> workingDir = getCommandOutput(new
-        // PrintWorkingDirCmd().getName());
-        // for (String s : workingDir) {
-        // Console.debug(s);
-        // }
-        // } catch (InterruptedException ex) {
-        // System.getLogger(FTPApplication.class.getName()).log(System.Logger.Level.ERROR,
-        // (String) null, ex);
-        // }
-        // }).start();
-        // TODO: get working directory
-        // FTPTreeItem rootNodeServer = new FTPTreeItem(new MLSDEntry("dir", "/"),
-        // folder -> App.getClient().listDir(folder));
-
-        // try (DirectoryStream<Path> dir = Files.newDirectoryStream(serverPath)) {
-        // for (Path fileName : dir) {
-        // FilePathTreeItem treeNode = new FilePathTreeItem(fileName);
-        // rootNodeServer.getChildren().add(treeNode);
-        // }
-        // }
-
-        // rootNodeServer.setExpanded(true);
-
     }
-
-    // private static List<String> getCommandOutput(String command) {
-    // List<String> messages = new ArrayList<>();
-    // try {
-    // Console.addListener(msg -> {
-    // messages.add(msg);
-    // });
-    // CommandHandler.getInstance().executeCommand(App.getClient(), command);
-
-    // Thread.sleep(200);
-    // } catch (ClientIOException ex) {
-    // System.getLogger(FTPApplication.class.getName()).log(System.Logger.Level.ERROR,
-    // (String) null, ex);
-    // } catch (InvalidArgumentsException ex) {
-    // System.getLogger(FTPApplication.class.getName()).log(System.Logger.Level.ERROR,
-    // (String) null, ex);
-    // } catch (InterruptedException ex) {
-    // System.getLogger(FTPApplication.class.getName()).log(System.Logger.Level.ERROR,
-    // (String) null, ex);
-    // }
-    // return messages;
-    // }
 
     public static void main(String[] args) {
         launch();
@@ -155,23 +103,16 @@ public class FTPApplication extends Application {
                     folder -> {
                         try {
                             App.getClient().sendMessage("PWD");
-                            ServerResponse tempResponse = ReceiveMessageThread.receiveMessages();
+                            ServerResponse tempResponse = ReceiveMessage.receiveMessages();
 
                             Console.debug("APoKSDPIEOusfALUE" + tempResponse.getMessage());
 
                             App.getClient().sendMessage("CWD " + folder.getFilePath());
-                            ReceiveMessageThread.receiveMessages();
+                            ReceiveMessage.receiveMessages();
 
                             new MLSDCmd().execute(new ArrayList<>());
                             PassiveSocketThread t = CommandHandler.getInstance().getPasvSocketThread();
                             String mlsdResponses = t.getMlsdResponse();
-                            // new PASVCmd().execute(new ArrayList<>());
-                            // ServerResponse pasvResponse = ReceiveMessageThread.receiveMessages();
-                            // PassiveSocketThread t = new PassiveSocketThread(pasvResponse, Purpose.MLSD);
-                            // t.start();
-                            // App.getClient().sendMessage("MLSD");
-                            // ReceiveMessageThread.receiveMessages();
-                            // String response = t.getMlsdResponse();
 
                             List<MLSDEntry> entries = new ArrayList<>();
 
@@ -184,7 +125,7 @@ public class FTPApplication extends Application {
                             while (!getCurrentDir().equals(currentDirectory)) {
                                 Console.debug("????????? CWD ../");
                                 App.getClient().sendMessage("CWD ../");
-                                ReceiveMessageThread.receiveMessages();
+                                ReceiveMessage.receiveMessages();
                             }
 
                             return entries;
@@ -245,7 +186,7 @@ public class FTPApplication extends Application {
             try {
                 Console.announce("Connecting...");
                 App.connect(hostNameTF.getText(), Integer.parseInt(portTF.getText()));
-                ReceiveMessageThread.receiveMessages();
+                ReceiveMessage.receiveMessages();
                 boolean isLoginSuccess = new LoginCmd()
                         .execute(new ArrayList<>(List.of(usernameTF.getText(), passwordTF.getText())));
                 if (isLoginSuccess) {
@@ -361,7 +302,7 @@ public class FTPApplication extends Application {
 
     private String getCurrentDir() throws ClientIOException, ServerException, IOException {
         App.getClient().sendMessage("PWD");
-        ServerResponse serverResponse = ReceiveMessageThread.receiveMessages();
+        ServerResponse serverResponse = ReceiveMessage.receiveMessages();
 
         return serverResponse.getMessage().split("\"")[1];
     }

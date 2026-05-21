@@ -10,7 +10,7 @@ import com.phuc.ftpclient.exception.ServerException;
 import com.phuc.ftpclient.state.State;
 import com.phuc.ftpclient.state.StateMachine;
 import com.phuc.ftpclient.threads.Purpose;
-import com.phuc.ftpclient.threads.ReceiveMessageThread;
+import com.phuc.ftpclient.util.ReceiveMessage;
 import com.phuc.ftpclient.util.ServerResponse;
 
 public class DeleteCmd extends BaseCmd {
@@ -39,8 +39,8 @@ public class DeleteCmd extends BaseCmd {
 
         CommandHandler.getInstance().setPurpose(Purpose.MESSAGE);
         App.getClient().sendMessage("DELE " + args.get(0));
-        ServerResponse response = ReceiveMessageThread.receiveMessages();
-        
+        ServerResponse response = ReceiveMessage.receiveMessages();
+
         StateMachine.getInstance().switchState(State.COMD);
 
         return response.getMessageCode() >= 200 && response.getMessageCode() <= 399;

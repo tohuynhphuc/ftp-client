@@ -1,49 +1,14 @@
-package com.phuc.ftpclient.threads;
+package com.phuc.ftpclient.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
 import com.phuc.ftpclient.App;
-import com.phuc.ftpclient.Client;
 import com.phuc.ftpclient.commands.CommandHandler;
-import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.ServerException;
-import com.phuc.ftpclient.util.Console;
-import com.phuc.ftpclient.util.Constants;
-import com.phuc.ftpclient.util.ServerResponse;
+import com.phuc.ftpclient.threads.PassiveSocketThread;
 
-public class ReceiveMessageThread extends Thread {
-
-    private final Client client;
-
-    public ReceiveMessageThread(Client client) {
-        this.client = client;
-    }
-
-    @Override
-    public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            try {
-                while (client.getReader().ready()) {
-                    receiveMessages();
-                }
-            } catch (IOException ex) {
-                if (Thread.currentThread().isInterrupted()) {
-                    Console.announce("Receive thread shutting down.");
-                    break;
-                }
-                ClientIOException e = new ClientIOException(ex.getMessage());
-                e.announceError();
-                ex.printStackTrace();
-                Console.error("The system will now stop receiving messages.");
-                App.shutdown();
-                break;
-            } catch (ServerException e) {
-                e.announceError();
-            }
-        }
-        Console.announce("Receive thread ended.");
-    }
+public class ReceiveMessage {
 
     public static ServerResponse receiveMessages() throws IOException, ServerException {
         BufferedReader reader = App.getClient().getReader();

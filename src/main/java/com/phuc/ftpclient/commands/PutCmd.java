@@ -10,7 +10,7 @@ import com.phuc.ftpclient.exception.ServerException;
 import com.phuc.ftpclient.state.State;
 import com.phuc.ftpclient.state.StateMachine;
 import com.phuc.ftpclient.threads.Purpose;
-import com.phuc.ftpclient.threads.ReceiveMessageThread;
+import com.phuc.ftpclient.util.ReceiveMessage;
 import com.phuc.ftpclient.util.ServerResponse;
 
 public class PutCmd extends BaseCmd {
@@ -40,10 +40,10 @@ public class PutCmd extends BaseCmd {
         CommandHandler.getInstance().setPurpose(Purpose.UPLOAD);
         CommandHandler.getInstance().setPathToFile(args.get(0));
         App.getClient().sendMessage("PASV");
-        ReceiveMessageThread.receiveMessages();
+        ReceiveMessage.receiveMessages();
         App.getClient().sendMessage("STOR " + args.get(1));
-        ReceiveMessageThread.receiveMessages();
-        ServerResponse response = ReceiveMessageThread.receiveMessages();
+        ReceiveMessage.receiveMessages();
+        ServerResponse response = ReceiveMessage.receiveMessages();
 
         StateMachine.getInstance().switchState(State.COMD);
 

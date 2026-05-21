@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import com.phuc.ftpclient.util.Console;
+import com.phuc.ftpclient.util.ReceiveMessage;
 import com.phuc.ftpclient.util.ServerResponse;
 import com.phuc.ftpclient.util.SocketAddress;
 
@@ -85,7 +86,7 @@ public class PassiveSocketThread extends Thread {
                 default -> throw new AssertionError();
             }
         } catch (IOException ex) {
-            System.getLogger(ReceiveMessageThread.class.getName()).log(System.Logger.Level.ERROR,
+            System.getLogger(ReceiveMessage.class.getName()).log(System.Logger.Level.ERROR,
                     (String) null, ex);
         }
 

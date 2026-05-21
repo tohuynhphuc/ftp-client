@@ -10,7 +10,7 @@ import com.phuc.ftpclient.exception.ServerException;
 import com.phuc.ftpclient.state.State;
 import com.phuc.ftpclient.state.StateMachine;
 import com.phuc.ftpclient.threads.Purpose;
-import com.phuc.ftpclient.threads.ReceiveMessageThread;
+import com.phuc.ftpclient.util.ReceiveMessage;
 
 public class QuitCmd extends BaseCmd {
 
@@ -37,7 +37,7 @@ public class QuitCmd extends BaseCmd {
 
         CommandHandler.getInstance().setPurpose(Purpose.MESSAGE);
         App.getClient().sendMessage("QUIT");
-        ReceiveMessageThread.receiveMessages();
+        ReceiveMessage.receiveMessages();
         App.shutdown();
         StateMachine.getInstance().switchState(State.SHUT);
         return true;

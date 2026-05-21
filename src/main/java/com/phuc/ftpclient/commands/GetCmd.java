@@ -8,7 +8,7 @@ import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.exception.ServerException;
 import com.phuc.ftpclient.threads.Purpose;
-import com.phuc.ftpclient.threads.ReceiveMessageThread;
+import com.phuc.ftpclient.util.ReceiveMessage;
 import com.phuc.ftpclient.util.ServerResponse;
 
 public class GetCmd extends BaseCmd {
@@ -38,10 +38,10 @@ public class GetCmd extends BaseCmd {
         CommandHandler.getInstance().setPurpose(Purpose.DOWNLOAD);
         CommandHandler.getInstance().setPathToFile(args.get(1));
         App.getClient().sendMessage("PASV");
-        ReceiveMessageThread.receiveMessages();
+        ReceiveMessage.receiveMessages();
         App.getClient().sendMessage("RETR " + args.get(0));
-        ReceiveMessageThread.receiveMessages();
-        ServerResponse response = ReceiveMessageThread.receiveMessages();
+        ReceiveMessage.receiveMessages();
+        ServerResponse response = ReceiveMessage.receiveMessages();
 
         return response.getMessageCode() >= 200 && response.getMessageCode() <= 399;
     }

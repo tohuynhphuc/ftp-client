@@ -8,7 +8,7 @@ import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.exception.ServerException;
 import com.phuc.ftpclient.threads.Purpose;
-import com.phuc.ftpclient.threads.ReceiveMessageThread;
+import com.phuc.ftpclient.util.ReceiveMessage;
 import com.phuc.ftpclient.util.ServerResponse;
 
 public class PrintWorkingDirCmd extends BaseCmd {
@@ -40,7 +40,7 @@ public class PrintWorkingDirCmd extends BaseCmd {
 
         CommandHandler.getInstance().setPurpose(Purpose.MESSAGE);
         App.getClient().sendMessage("PWD");
-        ServerResponse response = ReceiveMessageThread.receiveMessages();
+        ServerResponse response = ReceiveMessage.receiveMessages();
 
         return response.getMessageCode() >= 200 && response.getMessageCode() <= 399;
     }

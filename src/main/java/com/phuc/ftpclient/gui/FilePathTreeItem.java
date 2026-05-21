@@ -28,7 +28,6 @@ public class FilePathTreeItem extends TreeItem<String> {
     private static final Map<WatchKey, FilePathTreeItem> KEY_TO_ITEM = new ConcurrentHashMap<>();
     private static volatile boolean watcherThreadStarted = false;
 
-    // private final String fullPath;
     private Path path;
     private boolean isDirectory;
     private WatchKey watchKey;
@@ -178,7 +177,6 @@ public class FilePathTreeItem extends TreeItem<String> {
             }
         });
 
-        // watcherThread.setDaemon(false);
         watcherThread.start();
     }
 

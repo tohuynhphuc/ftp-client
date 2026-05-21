@@ -3,8 +3,6 @@ package com.phuc.ftpclient;
 import java.util.Scanner;
 
 import com.phuc.ftpclient.exception.ClientIOException;
-import com.phuc.ftpclient.threads.ReceiveMessageThread;
-import com.phuc.ftpclient.threads.SendCmdConsoleThread;
 import com.phuc.ftpclient.util.Console;
 import com.phuc.ftpclient.util.Constants;
 
@@ -23,28 +21,7 @@ public class App {
             connect(Constants.HOST_NAME, Constants.PORT);
             Console.announce("Client connected.");
 
-            // Thread.UncaughtExceptionHandler h = (th, exception) -> {
-            // Console.announce("Exception in thread: " + th.getName());
-            // shutdown();
-            // };
-
             scanner = new Scanner(System.in);
-            // startThreads();
-            // startMainLoopThread(h);
-
-            // while (true) {
-            // // send command
-            // try {
-            // sendCommands(scanner.nextLine());
-            // } catch (InvalidArgumentsException e) {
-            // e.announceError();
-            // // retry the loop
-            // continue;
-            // }
-            // }
-
-            // receiveThread.join();
-            // thread.join();
         } catch (ClientIOException e) {
             Console.error("Client IO Exception called");
             e.announceError();
@@ -54,28 +31,6 @@ public class App {
             cleanup();
         }
     }
-
-    // public static void startThreads() {
-    // receiveThread = new ReceiveMessageThread(client);
-    // receiveThread.setName("receiveThread");
-    // receiveThread.start();
-
-    // if (Constants.IS_CONSOLE) {
-    // sendThread = new SendCmdConsoleThread(scanner);
-    // sendThread.setName("sendThread");
-    // sendThread.start();
-    // }
-
-    // try {
-    // if (Constants.IS_CONSOLE) {
-    // receiveThread.join();
-    // sendThread.join();
-    // }
-    // } catch (InterruptedException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // }
 
     public static void connect(String hostName, int port) throws ClientIOException {
         client = new Client();
