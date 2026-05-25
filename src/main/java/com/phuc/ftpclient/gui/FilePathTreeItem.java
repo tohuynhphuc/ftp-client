@@ -176,7 +176,8 @@ public class FilePathTreeItem extends TreeItem<String> {
                 }
             }
         });
-
+        
+        watcherThread.setDaemon(true);
         watcherThread.start();
     }
 

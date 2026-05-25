@@ -1,6 +1,5 @@
 package com.phuc.ftpclient.commands;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,7 +58,7 @@ public class CommandHandler {
     }
 
     public void executeCommand(String userCommand)
-            throws ClientIOException, InvalidArgumentsException, ServerException, IOException {
+            throws ClientIOException, InvalidArgumentsException, ServerException {
         String[] commandList = userCommand.split(" ");
 
         ICommand command = getCommand(commandList[0]);

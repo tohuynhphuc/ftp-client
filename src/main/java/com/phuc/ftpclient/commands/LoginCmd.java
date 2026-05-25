@@ -1,6 +1,5 @@
 package com.phuc.ftpclient.commands;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import com.phuc.ftpclient.App;
@@ -31,7 +30,7 @@ public class LoginCmd extends BaseCmd {
 
     @Override
     public boolean execute(ArrayList<String> args)
-            throws InvalidArgumentsException, ClientIOException, ServerException, IOException {
+            throws InvalidArgumentsException, ClientIOException, ServerException {
         int argsCount = 2;
 
         System.out.println(args.size());

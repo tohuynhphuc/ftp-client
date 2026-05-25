@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.phuc.ftpclient.commands.CommandHandler;
+import com.phuc.ftpclient.commands.GetCmd;
 import com.phuc.ftpclient.commands.LoginCmd;
 import com.phuc.ftpclient.commands.MLSDCmd;
 import com.phuc.ftpclient.commands.PutCmd;
@@ -102,10 +103,8 @@ public class FTPApplication extends Application {
             rootNodeServer = new FTPTreeItem(new MLSDEntry("dir", currentDirectory),
                     folder -> {
                         try {
-                            App.getClient().sendMessage("PWD");
-                            ServerResponse tempResponse = ReceiveMessage.receiveMessages();
-
-                            Console.debug("APoKSDPIEOusfALUE" + tempResponse.getMessage());
+                            // App.getClient().sendMessage("PWD");
+                            // ReceiveMessage.receiveMessages();
 
                             App.getClient().sendMessage("CWD " + folder.getFilePath());
                             ReceiveMessage.receiveMessages();
@@ -123,7 +122,6 @@ public class FTPApplication extends Application {
                             }
 
                             while (!getCurrentDir().equals(currentDirectory)) {
-                                Console.debug("????????? CWD ../");
                                 App.getClient().sendMessage("CWD ../");
                                 ReceiveMessage.receiveMessages();
                             }
@@ -135,10 +133,8 @@ public class FTPApplication extends Application {
                     });
 
             treeViewServer.setRoot(rootNodeServer);
-            Console.debug("DONE!");
-        } catch (ClientIOException | ServerException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (ClientIOException | ServerException e) {
+            e.announceError();
         }
     }
 
@@ -169,8 +165,6 @@ public class FTPApplication extends Application {
         localFileBox = new VBox(treeViewLocal);
         localFileBox.setMinWidth(300);
 
-        // TODO: TreeViewServer
-
         treeViewServer = new TreeView<>();
 
         serverFileBox = new VBox(treeViewServer);
@@ -196,8 +190,6 @@ public class FTPApplication extends Application {
                 }
             } catch (ClientIOException | ServerException | InvalidArgumentsException ex) {
                 ex.announceError();
-                return;
-            } catch (IOException e) {
                 return;
             }
 
@@ -233,18 +225,42 @@ public class FTPApplication extends Application {
             Console.debug(command);
             try {
                 CommandHandler.getInstance().executeCommand(command);
-            } catch (ClientIOException | InvalidArgumentsException e) {
+            } catch (ClientIOException | InvalidArgumentsException | ServerException e) {
                 e.announceError();
-            } catch (ServerException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         });
 
         downloadBtn = new Button("< Download");
+        downloadBtn.setOnAction(event -> {
+            if (StateMachine.getInstance().getCurrentState() != State.COMD) {
+                return;
+            }
+
+            FilePathTreeItem localItem = (FilePathTreeItem) treeViewLocal.getSelectionModel().getSelectedItem();
+            FTPTreeItem serverItem = (FTPTreeItem) treeViewServer.getSelectionModel().getSelectedItem();
+
+            if (localItem == null || !localItem.getIsDirectory()) {
+                Console.error("Please select a local folder (not a file).");
+                return;
+            }
+
+            if (serverItem == null || serverItem.getIsDirectory()) {
+                Console.error("Please select a server file (not a folder).");
+                return;
+            }
+
+            String folderPath = localItem.getFilePath();
+            String filePath = serverItem.getFilePath();
+            String fileName = serverItem.getValue();
+
+            String command = (new GetCmd().getName()) + " " + filePath + " " + folderPath + "/" + fileName;
+            Console.debug(command);
+            try {
+                CommandHandler.getInstance().executeCommand(command);
+            } catch (ClientIOException | InvalidArgumentsException | ServerException e) {
+                e.announceError();
+            }
+        });
 
         controlButtonsBox = new VBox(connectBtn, uploadBtn, downloadBtn);
 
@@ -262,13 +278,8 @@ public class FTPApplication extends Application {
         sendCommandBtn.setOnAction(event -> {
             try {
                 CommandHandler.getInstance().executeCommand(commandTF.getText());
-            } catch (ClientIOException | InvalidArgumentsException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (ServerException ex) {
-                System.getLogger(FTPApplication.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-            } catch (IOException ex) {
-                System.getLogger(FTPApplication.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            } catch (ClientIOException | InvalidArgumentsException | ServerException e) {
+                e.announceError();
             }
             commandTF.clear();
         });
@@ -290,6 +301,7 @@ public class FTPApplication extends Application {
         primaryStage.setOnCloseRequest(event -> {
             StateMachine.getInstance().switchState(State.SHUT);
             App.shutdown();
+            System.exit(0);
         });
         primaryStage.show();
     }
@@ -300,7 +312,7 @@ public class FTPApplication extends Application {
         sendCommandBtn.setDisable(toSet);
     }
 
-    private String getCurrentDir() throws ClientIOException, ServerException, IOException {
+    private String getCurrentDir() throws ClientIOException, ServerException {
         App.getClient().sendMessage("PWD");
         ServerResponse serverResponse = ReceiveMessage.receiveMessages();
 

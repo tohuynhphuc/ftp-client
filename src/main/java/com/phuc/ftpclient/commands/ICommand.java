@@ -1,6 +1,5 @@
 package com.phuc.ftpclient.commands;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import com.phuc.ftpclient.exception.ClientIOException;
@@ -17,6 +16,6 @@ public interface ICommand {
     // InvalidArgumentsException;
 
     public boolean execute(ArrayList<String> args)
-            throws InvalidArgumentsException, ClientIOException, ServerException, IOException;
+            throws InvalidArgumentsException, ClientIOException, ServerException;
 
 }

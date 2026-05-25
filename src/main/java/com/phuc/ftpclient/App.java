@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.util.Console;
-import com.phuc.ftpclient.util.Constants;
 
 public class App {
 
@@ -15,23 +14,6 @@ public class App {
     private static Thread receiveThread;
     private static Thread sendThread;
 
-    public static void main(String[] args) {
-        try {
-            Console.announce("Program started.");
-            connect(Constants.HOST_NAME, Constants.PORT);
-            Console.announce("Client connected.");
-
-            scanner = new Scanner(System.in);
-        } catch (ClientIOException e) {
-            Console.error("Client IO Exception called");
-            e.announceError();
-
-            shutdown();
-        } finally {
-            cleanup();
-        }
-    }
-
     public static void connect(String hostName, int port) throws ClientIOException {
         client = new Client();
         isRunning = true;
@@ -39,7 +21,7 @@ public class App {
     }
 
     public static synchronized void shutdown() {
-        Console.debug("Shutdown called");
+        Console.announce("Shutdown called");
         if (!isRunning) {
             return;
         }
