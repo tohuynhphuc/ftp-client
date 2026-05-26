@@ -3,7 +3,7 @@ package com.phuc.ftpclient.util;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import com.phuc.ftpclient.App;
+import com.phuc.ftpclient.FTPApplication;
 import com.phuc.ftpclient.commands.CommandHandler;
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.ServerException;
@@ -13,13 +13,13 @@ public class ReceiveMessage {
 
     public static ServerResponse receiveMessages() throws ServerException, ClientIOException {
         try {
-            BufferedReader reader = App.getClient().getReader();
+            BufferedReader reader = FTPApplication.getClient().getReader();
             String receivedMessage;
             receivedMessage = reader.readLine();
             if (receivedMessage == null) {
                 // Connection closed by server
                 Console.announce("Connection closed by server.");
-                App.shutdown();
+                FTPApplication.getClient().closeConnection();
                 return null;
             }
 

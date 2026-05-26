@@ -2,7 +2,7 @@ package com.phuc.ftpclient.commands;
 
 import java.util.ArrayList;
 
-import com.phuc.ftpclient.App;
+import com.phuc.ftpclient.FTPApplication;
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.exception.ServerException;
@@ -35,9 +35,9 @@ public class QuitCmd extends BaseCmd {
         }
 
         CommandHandler.getInstance().setPurpose(Purpose.MESSAGE);
-        App.getClient().sendMessage("QUIT");
+        FTPApplication.getClient().sendMessage("QUIT");
         ReceiveMessage.receiveMessages();
-        App.shutdown();
+        FTPApplication.getClient().closeConnection();
         StateMachine.getInstance().switchState(State.SHUT);
         return true;
     }

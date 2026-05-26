@@ -29,6 +29,7 @@ import com.phuc.ftpclient.util.ReceiveMessage;
 import com.phuc.ftpclient.util.ServerResponse;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -68,6 +69,13 @@ public class FTPApplication extends Application {
     private VBox root;
     private Scene mainScene;
 
+    private static Client client;
+
+    public static void connect(String hostName, int port) throws ClientIOException {
+        client = new Client();
+        client.connect(hostName, port);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         StateMachine.getInstance().addListener(state -> {
@@ -103,10 +111,10 @@ public class FTPApplication extends Application {
             rootNodeServer = new FTPTreeItem(new MLSDEntry("dir", currentDirectory),
                     folder -> {
                         try {
-                            // App.getClient().sendMessage("PWD");
+                            // FTPApplication.getClient().sendMessage("PWD");
                             // ReceiveMessage.receiveMessages();
 
-                            App.getClient().sendMessage("CWD " + folder.getFilePath());
+                            FTPApplication.getClient().sendMessage("CWD " + folder.getFilePath());
                             ReceiveMessage.receiveMessages();
 
                             new MLSDCmd().execute(new ArrayList<>());
@@ -122,7 +130,7 @@ public class FTPApplication extends Application {
                             }
 
                             while (!getCurrentDir().equals(currentDirectory)) {
-                                App.getClient().sendMessage("CWD ../");
+                                FTPApplication.getClient().sendMessage("CWD ../");
                                 ReceiveMessage.receiveMessages();
                             }
 
@@ -179,7 +187,7 @@ public class FTPApplication extends Application {
 
             try {
                 Console.announce("Connecting...");
-                App.connect(hostNameTF.getText(), Integer.parseInt(portTF.getText()));
+                FTPApplication.connect(hostNameTF.getText(), Integer.parseInt(portTF.getText()));
                 ReceiveMessage.receiveMessages();
                 boolean isLoginSuccess = new LoginCmd()
                         .execute(new ArrayList<>(List.of(usernameTF.getText(), passwordTF.getText())));
@@ -266,6 +274,8 @@ public class FTPApplication extends Application {
 
         fileTransferBox = new HBox(localFileBox, controlButtonsBox, serverFileBox);
 
+        controlButtonsBox.setAlignment(Pos.TOP_CENTER);
+
         responseTA = new TextArea();
         responseTA.setEditable(false);
         responseTA.setWrapText(true);
@@ -300,7 +310,12 @@ public class FTPApplication extends Application {
         primaryStage.setTitle("FTP Client");
         primaryStage.setOnCloseRequest(event -> {
             StateMachine.getInstance().switchState(State.SHUT);
-            App.shutdown();
+            try {
+                if (client != null)
+                    client.closeConnection();
+            } catch (ClientIOException e) {
+                e.announceError();
+            }
             System.exit(0);
         });
         primaryStage.show();
@@ -313,10 +328,14 @@ public class FTPApplication extends Application {
     }
 
     private String getCurrentDir() throws ClientIOException, ServerException {
-        App.getClient().sendMessage("PWD");
+        FTPApplication.getClient().sendMessage("PWD");
         ServerResponse serverResponse = ReceiveMessage.receiveMessages();
 
         return serverResponse.getMessage().split("\"")[1];
+    }
+
+    public static Client getClient() {
+        return client;
     }
 
 }

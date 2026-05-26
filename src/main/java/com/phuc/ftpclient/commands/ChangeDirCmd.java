@@ -2,7 +2,7 @@ package com.phuc.ftpclient.commands;
 
 import java.util.ArrayList;
 
-import com.phuc.ftpclient.App;
+import com.phuc.ftpclient.FTPApplication;
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.exception.ServerException;
@@ -37,7 +37,7 @@ public class ChangeDirCmd extends BaseCmd {
         }
 
         CommandHandler.getInstance().setPurpose(Purpose.MESSAGE);
-        App.getClient().sendMessage("CWD " + args.get(0));
+        FTPApplication.getClient().sendMessage("CWD " + args.get(0));
         ServerResponse response = ReceiveMessage.receiveMessages();
 
         StateMachine.getInstance().switchState(State.COMD);

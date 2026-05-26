@@ -2,7 +2,7 @@ package com.phuc.ftpclient.commands;
 
 import java.util.ArrayList;
 
-import com.phuc.ftpclient.App;
+import com.phuc.ftpclient.FTPApplication;
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.exception.ServerException;
@@ -38,7 +38,7 @@ public class PrintWorkingDirCmd extends BaseCmd {
         }
 
         CommandHandler.getInstance().setPurpose(Purpose.MESSAGE);
-        App.getClient().sendMessage("PWD");
+        FTPApplication.getClient().sendMessage("PWD");
         ServerResponse response = ReceiveMessage.receiveMessages();
 
         return response.getMessageCode() >= 200 && response.getMessageCode() <= 399;

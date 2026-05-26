@@ -2,7 +2,7 @@ package com.phuc.ftpclient.commands;
 
 import java.util.ArrayList;
 
-import com.phuc.ftpclient.App;
+import com.phuc.ftpclient.FTPApplication;
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.exception.ServerException;
@@ -38,9 +38,9 @@ public class MLSDCmd extends BaseCmd {
         }
 
         CommandHandler.getInstance().setPurpose(Purpose.MLSD);
-        App.getClient().sendMessage("PASV");
+        FTPApplication.getClient().sendMessage("PASV");
         ReceiveMessage.receiveMessages();
-        App.getClient().sendMessage("MLSD");
+        FTPApplication.getClient().sendMessage("MLSD");
         ReceiveMessage.receiveMessages();
         ServerResponse response = ReceiveMessage.receiveMessages();
 

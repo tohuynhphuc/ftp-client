@@ -2,7 +2,7 @@ package com.phuc.ftpclient.commands;
 
 import java.util.ArrayList;
 
-import com.phuc.ftpclient.App;
+import com.phuc.ftpclient.FTPApplication;
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.exception.ServerException;
@@ -36,9 +36,9 @@ public class GetCmd extends BaseCmd {
 
         CommandHandler.getInstance().setPurpose(Purpose.DOWNLOAD);
         CommandHandler.getInstance().setPathToFile(args.get(1));
-        App.getClient().sendMessage("PASV");
+        FTPApplication.getClient().sendMessage("PASV");
         ReceiveMessage.receiveMessages();
-        App.getClient().sendMessage("RETR " + args.get(0));
+        FTPApplication.getClient().sendMessage("RETR " + args.get(0));
         ReceiveMessage.receiveMessages();
         ServerResponse response = ReceiveMessage.receiveMessages();
 
