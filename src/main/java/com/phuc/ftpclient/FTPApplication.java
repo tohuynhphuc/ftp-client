@@ -10,10 +10,13 @@ import java.util.Collections;
 import java.util.List;
 
 import com.phuc.ftpclient.commands.CommandHandler;
+import com.phuc.ftpclient.commands.DeleteCmd;
 import com.phuc.ftpclient.commands.GetCmd;
 import com.phuc.ftpclient.commands.LoginCmd;
 import com.phuc.ftpclient.commands.MLSDCmd;
+import com.phuc.ftpclient.commands.MakeDirCmd;
 import com.phuc.ftpclient.commands.PutCmd;
+import com.phuc.ftpclient.commands.RemoveDirCmd;
 import com.phuc.ftpclient.exception.ClientIOException;
 import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.exception.ServerException;
@@ -59,6 +62,8 @@ public class FTPApplication extends Application {
     private Button connectBtn;
     private Button uploadBtn;
     private Button downloadBtn;
+    private Button createFolderBtn;
+    private Button deleteBtn;
     private VBox controlButtonsBox;
     private HBox fileTransferBox;
     private TextArea responseTA;
@@ -270,7 +275,66 @@ public class FTPApplication extends Application {
             }
         });
 
-        controlButtonsBox = new VBox(connectBtn, uploadBtn, downloadBtn);
+        createFolderBtn = new Button("Create Folder");
+        createFolderBtn.setOnAction(event -> {
+            if (StateMachine.getInstance().getCurrentState() != State.COMD) {
+                return;
+            }
+
+            FTPTreeItem serverItem = (FTPTreeItem) treeViewServer.getSelectionModel().getSelectedItem();
+
+            if (serverItem == null || !serverItem.getIsDirectory()) {
+                Console.error("Please select a server folder (not a file).");
+                return;
+            }
+
+            String folderPath = serverItem.getFilePath();
+
+            if (commandTF.getText().isBlank()) {
+                Console.error("Please input the new folder name in the Command box.");
+                return;
+            }
+
+            String command = (new MakeDirCmd().getName()) + " " + folderPath + "/" + commandTF.getText();
+            Console.debug(command);
+            try {
+                CommandHandler.getInstance().executeCommand(command);
+            } catch (ClientIOException | InvalidArgumentsException | ServerException e) {
+                e.announceError();
+            }
+        });
+
+        deleteBtn = new Button("Delete");
+        deleteBtn.setOnAction(event -> {
+            if (StateMachine.getInstance().getCurrentState() != State.COMD) {
+                return;
+            }
+
+            FTPTreeItem serverItem = (FTPTreeItem) treeViewServer.getSelectionModel().getSelectedItem();
+
+            if (serverItem == null) {
+                Console.error("Please select a server file or folder.");
+                return;
+            }
+
+            String filePath = serverItem.getFilePath();
+
+            String command;
+            if (serverItem.getIsDirectory()) {
+                command = (new RemoveDirCmd().getName()) + " " + filePath;
+            } else {
+                command = (new DeleteCmd().getName()) + " " + filePath;
+            }
+
+            Console.debug(command);
+            try {
+                CommandHandler.getInstance().executeCommand(command);
+            } catch (ClientIOException | InvalidArgumentsException | ServerException e) {
+                e.announceError();
+            }
+        });
+
+        controlButtonsBox = new VBox(connectBtn, uploadBtn, downloadBtn, createFolderBtn, deleteBtn);
 
         fileTransferBox = new HBox(localFileBox, controlButtonsBox, serverFileBox);
 

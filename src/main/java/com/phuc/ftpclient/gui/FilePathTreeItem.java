@@ -108,6 +108,8 @@ public class FilePathTreeItem extends TreeItem<String> {
                     getChildren().add(treeNode);
                 }
             }
+
+            setExpanded(true);
         } catch (IOException e) {
 
         }
@@ -176,7 +178,7 @@ public class FilePathTreeItem extends TreeItem<String> {
                 }
             }
         });
-        
+
         watcherThread.setDaemon(true);
         watcherThread.start();
     }

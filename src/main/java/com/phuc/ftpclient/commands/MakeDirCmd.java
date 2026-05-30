@@ -32,8 +32,9 @@ public class MakeDirCmd extends BaseCmd {
         int argsCount = 1;
 
         if (args.size() != argsCount) {
-            throw new InvalidArgumentsException(
-                    "Error: Expecting " + argsCount + " arguments for command " + getName() + ".");
+            // throw new InvalidArgumentsException(
+            // "Error: Expecting " + argsCount + " arguments for command " + getName() +
+            // ".");
         }
 
         CommandHandler.getInstance().setPurpose(Purpose.MESSAGE);

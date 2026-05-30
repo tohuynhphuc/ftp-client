@@ -10,6 +10,7 @@ import com.phuc.ftpclient.exception.InvalidArgumentsException;
 import com.phuc.ftpclient.exception.ServerException;
 import com.phuc.ftpclient.threads.PassiveSocketThread;
 import com.phuc.ftpclient.threads.Purpose;
+import com.phuc.ftpclient.util.Console;
 
 public class CommandHandler {
 
@@ -62,6 +63,10 @@ public class CommandHandler {
         String[] commandList = userCommand.split(" ");
 
         ICommand command = getCommand(commandList[0]);
+        if (command == null) {
+            Console.error("Invalid command.");
+            return;
+        }
         ArrayList<String> args = new ArrayList<>(Arrays.asList(Arrays.copyOfRange(commandList, 1, commandList.length)));
 
         command.execute(args);

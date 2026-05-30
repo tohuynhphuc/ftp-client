@@ -22,12 +22,6 @@ public class PassiveSocketThread extends Thread {
     private boolean isMlsdReady = false;
     private String mlsdResponse;
 
-    public PassiveSocketThread(ServerResponse response, Purpose purpose) {
-        this.purpose = purpose;
-        this.addr = new SocketAddress(response.getMessage());
-        setDaemon(true);
-    }
-
     public PassiveSocketThread(ServerResponse response, Purpose purpose, String pathToFile) {
         this.purpose = purpose;
         this.addr = new SocketAddress(response.getMessage());
@@ -68,8 +62,6 @@ public class PassiveSocketThread extends Thread {
                 case Purpose.DOWNLOAD -> {
                     Console.announce("File Download starting...");
                     InputStream dataInputStream = dataSocket.getInputStream();
-                    // FileOutputStream fileOutputStream = new FileOutputStream(Constants.LOCAL_DIR
-                    // + pathToFile);
                     FileOutputStream fileOutputStream = new FileOutputStream(pathToFile);
                     dataInputStream.transferTo(fileOutputStream);
                     Console.announce("File Download complete.");
@@ -77,8 +69,6 @@ public class PassiveSocketThread extends Thread {
                 case Purpose.UPLOAD -> {
                     Console.announce("File Upload starting...");
                     OutputStream dataOutputStream = dataSocket.getOutputStream();
-                    // try (FileInputStream fileInputStream = new
-                    // FileInputStream(Constants.LOCAL_DIR + pathToFile)) {
                     try (FileInputStream fileInputStream = new FileInputStream(pathToFile)) {
                         fileInputStream.transferTo(dataOutputStream);
                     }

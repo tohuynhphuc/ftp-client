@@ -21,8 +21,7 @@ public class RemoveDirCmd extends BaseCmd {
 
     @Override
     public String getUsage() {
-        String usage = "Removes directory.\n\tUsage: "
-                + getName() + " <directory>";
+        String usage = "Removes directory.\n\tUsage: " + getName() + " <directory>";
         return usage;
     }
 
