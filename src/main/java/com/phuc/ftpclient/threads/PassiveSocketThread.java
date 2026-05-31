@@ -50,7 +50,7 @@ public class PassiveSocketThread extends Thread {
                     mlsdResponse = "";
                     while (!Thread.currentThread().isInterrupted() && (line = dataReader.readLine()) != null) {
                         if (line.startsWith("type=")) {
-                            Console.message("FOUND LINE: " + line);
+                            Console.message(line);
                             mlsdResponse += line + "\n";
                         }
                     }

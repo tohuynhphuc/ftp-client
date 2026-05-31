@@ -39,7 +39,8 @@ public class Client {
 
     public void closeConnection() throws ClientIOException {
         try {
-            socket.close();
+            if (socket != null && !socket.isClosed())
+                socket.close();
         } catch (IOException e) {
             throw new ClientIOException(e.getMessage());
         }

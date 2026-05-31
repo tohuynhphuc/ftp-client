@@ -1,8 +1,6 @@
 package com.phuc.ftpclient;
 
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -37,6 +35,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -53,7 +52,6 @@ public class FTPApplication extends Application {
     private TextField passwordTF;
     private HBox loginBox;
     private TreeView<String> treeViewLocal;
-    private FilePathTreeItem rootNodeLocal;
     private final ImageView FOLDER_IMAGE = new ImageView("img/folder.png");
     private VBox localFileBox;
     private TreeView<String> treeViewServer;
@@ -96,7 +94,7 @@ public class FTPApplication extends Application {
                     setUpTreeViewServer();
                 }
                 case SHUT -> {
-
+                    primaryStage.close();
                 }
             }
         });
@@ -116,9 +114,6 @@ public class FTPApplication extends Application {
             rootNodeServer = new FTPTreeItem(new MLSDEntry("dir", currentDirectory),
                     folder -> {
                         try {
-                            // FTPApplication.getClient().sendMessage("PWD");
-                            // ReceiveMessage.receiveMessages();
-
                             FTPApplication.getClient().sendMessage("CWD " + folder.getFilePath());
                             ReceiveMessage.receiveMessages();
 
@@ -162,18 +157,19 @@ public class FTPApplication extends Application {
         FOLDER_IMAGE.setFitWidth(16);
         FOLDER_IMAGE.setFitHeight(16);
 
-        Path localPath = Paths.get(Constants.LOCAL_DIR);
-        rootNodeLocal = new FilePathTreeItem(localPath);
-        try (DirectoryStream<Path> dir = Files.newDirectoryStream(localPath)) {
-            for (Path fileName : dir) {
-                FilePathTreeItem treeNode = new FilePathTreeItem(fileName);
-                rootNodeLocal.getChildren().add(treeNode);
-            }
-        } catch (IOException ex) {
-            System.getLogger(FTPApplication.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        for (Path p : FileSystems.getDefault().getRootDirectories()) {
+            System.out.println(p);
         }
 
-        treeViewLocal = new TreeView<>(rootNodeLocal);
+        TreeItem<String> fakeRoot = new TreeItem<>("Computer");
+        Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
+        for (Path name : rootDirectories) {
+            FilePathTreeItem treeNode = new FilePathTreeItem(name);
+            fakeRoot.getChildren().add(treeNode);
+        }
+
+        treeViewLocal = new TreeView<>(fakeRoot);
+        treeViewLocal.setShowRoot(false);
 
         localFileBox = new VBox(treeViewLocal);
         localFileBox.setMinWidth(300);
@@ -185,7 +181,9 @@ public class FTPApplication extends Application {
 
         // INFO: Only connect to server if INIT has completed.
         connectBtn = new Button("Connect");
-        connectBtn.setOnAction(event -> {
+        connectBtn.setOnAction(event ->
+
+        {
             if (StateMachine.getInstance().getCurrentState() != State.CONN) {
                 return;
             }
